@@ -50,7 +50,7 @@
 html,body{height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow:hidden;font-size:14px;line-height:1.6}
 
 /* ── TOPBAR ── */
-.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar);background:rgba(8,8,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 0;z-index:200}
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar);background:rgba(8,8,13,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 0;z-index:200;transition:opacity 0.3s}
 .topbar-left{display:flex;align-items:center;gap:0;width:var(--sidebar);flex-shrink:0;padding-left:16px}
 .logo{font-family:var(--font-serif);font-size:17px;font-weight:600;color:var(--accent);letter-spacing:-0.02em;font-style:italic}
 .topbar-center{flex:1;display:flex;align-items:center;gap:12px;padding:0 20px}
@@ -363,7 +363,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
 .setup-note strong{color:var(--text)}
 
 /* ── LOGIN SCREEN ── */
-#login-screen{position:fixed;inset:0;background:var(--bg);z-index:998;display:none;align-items:center;justify-content:center}
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity 0.3s}
 .login-wrap{width:100%;max-width:400px;padding:24px}
 .login-logo{font-family:var(--font-serif);font-size:28px;font-weight:600;color:var(--accent);font-style:italic;margin-bottom:4px;text-align:center}
 .login-tagline{font-size:13px;color:var(--t2);margin-bottom:32px;text-align:center}
@@ -397,9 +397,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
 .gcal-connect-icon{font-size:48px;margin-bottom:12px}
 .gcal-connect-title{font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px}
 .gcal-connect-sub{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px}
+
+/* ── APP LOADING STATE ── */
+body.app-loading .topbar,
+body.app-loading .sidebar,
+body.app-loading .main{opacity:0;pointer-events:none}
+body.app-ready .topbar,
+body.app-ready .sidebar,
+body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 </style>
 </head>
-<body>
+<body class="app-loading">
 
 
 <!-- ── FIREBASE SETUP OVERLAY ── -->
@@ -817,6 +825,8 @@ let _db = null, _auth = null, _currentUid = null, _saveTimer = null, _unsubscrib
 
 if (!_isConfigured) {
   document.getElementById('fb-setup').style.display = 'flex';
+  // In non-configured mode, hide login screen (setup overlay replaces it)
+  document.getElementById('login-screen').style.display = 'none';
 } else {
   firebase.initializeApp(_fbCfg);
   _auth = firebase.auth();
@@ -829,15 +839,26 @@ if (!_isConfigured) {
   _auth.onAuthStateChanged(user => {
     if (user) {
       _currentUid = user.uid;
-      document.getElementById('login-screen').style.display = 'none';
+      // Hide login screen, reveal app
+      const ls = document.getElementById('login-screen');
+      ls.style.opacity = '0';
+      ls.style.pointerEvents = 'none';
+      setTimeout(() => { ls.style.display = 'none'; }, 300);
+      document.body.classList.remove('app-loading');
+      document.body.classList.add('app-ready');
       _updateUserUI(user);
       _subscribe(user.uid);
-      // Detect login provider — Google users get calendar auto-connected via doGoogleLogin token
       _isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
     } else {
       _currentUid = null;
       _isGoogleUser = false;
-      document.getElementById('login-screen').style.display = 'flex';
+      // Show login screen, hide app
+      const ls = document.getElementById('login-screen');
+      ls.style.display = 'flex';
+      ls.style.opacity = '1';
+      ls.style.pointerEvents = 'all';
+      document.body.classList.add('app-loading');
+      document.body.classList.remove('app-ready');
       _setSyncStatus('off');
       gcalToken = null;
       updateGcalStatus(false);
@@ -1452,6 +1473,9 @@ document.addEventListener('click',e=>{if(!e.target.closest('#slash-menu')&&!e.ta
 //  INIT
 // ════════════════════════════════════════════════════
 function _appReady(){
+  // Reveal app UI
+  document.body.classList.remove('app-loading');
+  document.body.classList.add('app-ready');
   checkStreak();
   renderStreak();
   updateTasksBadge();
@@ -1464,22 +1488,23 @@ function _appReady(){
 function _handleUrlParams(){
   const params = new URLSearchParams(window.location.search);
   const action = params.get('action');
-  if(action === 'login' || action === 'register'){
-    // Pre-show login screen immediately (Firebase will hide it once auth resolves)
-    const ls = document.getElementById('login-screen');
-    if(ls) ls.style.display = 'flex';
-    // Switch to the right form
-    if(typeof switchForm === 'function') switchForm(action === 'register' ? 'register' : 'login');
+  // Login screen is visible by default — just switch the correct form
+  if(action === 'register'){
+    switchForm('register');
+  } else {
+    switchForm('login'); // default
   }
 }
 
 function init(){
-  _handleUrlParams();
-  if(!_isConfigured){
+  if(_isConfigured){
+    // Firebase configured: show login screen (default), wait for onAuthStateChanged
+    _handleUrlParams();
+  } else {
+    // Not configured: setup overlay handles everything, skip login
     load();
     _appReady();
   }
-  // If configured: Firebase onAuthStateChanged -> _subscribe -> _appReady
 }
 
 init();
