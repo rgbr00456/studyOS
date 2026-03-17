@@ -6,10 +6,12 @@
 <title>StudyOS</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
-
+<!-- ══════════════════════════════════════════════════════════════
+     FIREBASE — substitua cada "COLE_AQUI" pelas suas credenciais
+     ══════════════════════════════════════════════════════════════ -->
 <script>
   window.FIREBASE_CONFIG = {
-     apiKey: "AIzaSyBmmTRyczTNwSJDN1G9Clfdv81Gx5D0_Gw",
+    apiKey: "AIzaSyBmmTRyczTNwSJDN1G9Clfdv81Gx5D0_Gw",
     authDomain: "monitor-de-estudos-2d9f9.firebaseapp.com",
     projectId: "monitor-de-estudos-2d9f9",
     storageBucket: "monitor-de-estudos-2d9f9.firebasestorage.app",
@@ -439,6 +441,7 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
           Entrar com Google
         </button>
         <div class="login-switch">Não tem conta? <a onclick="switchForm('register')">Criar conta</a></div>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">Problemas com o popup? <a onclick="doGoogleRedirect()" style="color:var(--accent);cursor:pointer">Usar redirecionamento</a></div>
       </div>
 
       <div id="form-register" style="display:none">
@@ -877,6 +880,19 @@ if (!_isConfigured) {
     lbl.textContent = map[s] || s;
   }
 
+  // Handle redirect result — called when user comes back from Google redirect login
+  _auth.getRedirectResult().then(result => {
+    if(result && result.user){
+      // Redirect login succeeded — onAuthStateChanged will handle it
+      console.log('Redirect login success:', result.user.email);
+    }
+  }).catch(e => {
+    if(e.code && e.code !== 'auth/no-auth-event'){
+      console.error('Redirect result error:', e.code);
+      _showLoginErr(_xlateErr(e.code));
+    }
+  });
+
   function _subscribe(uid) {
     if (_unsubscribe) _unsubscribe();
     _setSyncStatus('saving');
@@ -905,10 +921,14 @@ if (!_isConfigured) {
   };
 
   window.doLogin = function() {
-    _auth.signInWithEmailAndPassword(
-      document.getElementById('l-email').value.trim(),
-      document.getElementById('l-senha').value
-    ).catch(e => _showLoginErr(_xlateErr(e.code)));
+    const email = document.getElementById('l-email').value.trim();
+    const senha = document.getElementById('l-senha').value;
+    if(!email || !senha){ _showLoginErr('Preencha e-mail e senha.'); return; }
+    _auth.signInWithEmailAndPassword(email, senha)
+      .catch(e => {
+        console.error('Login error:', e.code, e.message);
+        _showLoginErr(_xlateErr(e.code));
+      });
   };
 
   window.doRegister = function() {
@@ -922,14 +942,18 @@ if (!_isConfigured) {
   };
 
   window.doGoogleLogin = function() {
+    if(!_auth){ _showLoginErr('Firebase ainda inicializando. Aguarde um segundo e tente novamente.'); return; }
     _auth.signInWithPopup(_gProvider)
-      .then(result => {
-        // Login successful — calendar access is requested separately via openGcalSetup()
-        // The onAuthStateChanged handler will take it from here
-      })
+      .then(() => { /* onAuthStateChanged cuida do resto */ })
       .catch(e => {
         console.error('Google login error:', e.code, e.message);
-        if(e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request'){
+        if(e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request'){
+          // Popup bloqueado — usa redirect como fallback automático
+          _showLoginErr('Popup bloqueado pelo navegador. Redirecionando...');
+          setTimeout(() => _auth.signInWithRedirect(_gProvider), 1200);
+        } else if(e.code === 'auth/unauthorized-domain'){
+          _showLoginErr('Domínio não autorizado no Firebase. Adicione este domínio em Authentication → Configurações → Domínios autorizados.');
+        } else if(e.code !== 'auth/popup-closed-by-user'){
           _showLoginErr(_xlateErr(e.code));
         }
       });
@@ -948,7 +972,7 @@ if (!_isConfigured) {
   function _showLoginErr(msg) {
     const el = document.getElementById('login-error');
     el.textContent = msg; el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 5000);
+    setTimeout(() => el.style.display = 'none', 8000);
   }
 
   function _xlateErr(code) {
@@ -965,6 +989,12 @@ if (!_isConfigured) {
     }[code] || 'Erro ao autenticar. Tente novamente.';
   }
 }
+
+// Global redirect fallback — works even when popups are blocked
+window.doGoogleRedirect = function(){
+  if(!_auth){ alert('Firebase não inicializado. Verifique as credenciais no início do arquivo.'); return; }
+  _auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+};
 
 // Fallbacks for non-configured mode
 if (!_isConfigured) {
