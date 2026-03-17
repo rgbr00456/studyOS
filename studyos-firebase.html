@@ -4,17 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyOS</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <!-- ══════════════════════════════════════════════════════════════
      FIREBASE — substitua cada "COLE_AQUI" pelas suas credenciais
      ══════════════════════════════════════════════════════════════ -->
 <script>
   window.FIREBASE_CONFIG = {
-    apiKey: "AIzaSyBmmTRyczTNwSJDN1G9Clfdv81Gx5D0_Gw",
-    authDomain: "monitor-de-estudos-2d9f9.firebaseapp.com",
-    projectId: "monitor-de-estudos-2d9f9",
-    storageBucket: "monitor-de-estudos-2d9f9.firebasestorage.app",
-    messagingSenderId: "571546571581",
-    appId: "1:571546571581:web:3cb3a23265b463c087ab54"
+    apiKey:            "COLE_AQUI",
+    authDomain:        "COLE_AQUI",
+    projectId:         "COLE_AQUI",
+    storageBucket:     "COLE_AQUI",
+    messagingSenderId: "COLE_AQUI",
+    appId:             "COLE_AQUI"
   };
 </script>
 <!-- ══════════════════════════════════════════════════════════════ -->
@@ -389,6 +391,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
 .sync-dot.saving{background:var(--accent);animation:pulse 1s infinite}
 .sync-dot.err{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── GCAL CONNECT MODAL (email users) ── */
+.gcal-connect-box{text-align:center;padding:8px 0}
+.gcal-connect-icon{font-size:48px;margin-bottom:12px}
+.gcal-connect-title{font-family:var(--font-serif);font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px}
+.gcal-connect-sub{font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px}
 </style>
 </head>
 <body>
@@ -512,7 +520,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
   <div class="sidebar-footer">
     <button class="sidebar-footer-btn" onclick="openGcalSetup()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z"/><path d="M12 6v6l4 2"/></svg>
-      Configurar Google Agenda
+      Conectar Google Agenda
     </button>
   </div>
 </nav>
@@ -755,47 +763,19 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
   <div class="slash-item" onclick="insertBlock('divider')"><div class="slash-item-icon">—</div><div class="slash-item-info"><div class="name">Divisor</div><div class="desc">Linha divisória</div></div></div>
 </div>
 
-<!-- ── GOOGLE CALENDAR SETUP MODAL ── -->
+<!-- ── GOOGLE CALENDAR CONNECT MODAL ── -->
 <div class="modal-overlay" id="gcal-modal">
-  <div class="modal">
-    <div class="modal-title">📅 Integrar Google Agenda</div>
-    <div class="modal-sub">Adicione um Client ID do Google para sincronizar tarefas com lembretes automáticos no seu Google Agenda.</div>
-
-    <div class="modal-step">
-      <div class="modal-step-num">1</div>
-      <div class="modal-step-body">
-        <div class="step-title">Acesse o Google Cloud Console</div>
-        <div class="step-desc">Vá para <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> → crie um projeto → pesquise "Google Calendar API" e ative.</div>
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">2</div>
-      <div class="modal-step-body">
-        <div class="step-title">Crie credenciais OAuth 2.0</div>
-        <div class="step-desc">APIs e serviços → Credenciais → Criar credenciais → ID do cliente OAuth → Tipo: <strong>Aplicativo da Web</strong>. Em "Origens JavaScript autorizadas" adicione o domínio onde hospedou o app (ex: <code>https://seu-site.netlify.app</code>).</div>
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">3</div>
-      <div class="modal-step-body">
-        <div class="step-title">Cole o Client ID abaixo</div>
-        <div class="step-desc">Copie o ID do cliente gerado (termina em <code>.apps.googleusercontent.com</code>) e cole aqui:</div>
-        <input class="inp" id="gcal-client-id" placeholder="xxxx.apps.googleusercontent.com" style="margin-top:10px">
-      </div>
-    </div>
-    <div class="modal-step">
-      <div class="modal-step-num">4</div>
-      <div class="modal-step-body">
-        <div class="step-title">Tela de consentimento</div>
-        <div class="step-desc">Em APIs e serviços → Tela de permissão OAuth → configure como <strong>Externo</strong>, adicione seu e-mail como testador, e adicione o escopo <code>https://www.googleapis.com/auth/calendar.events</code>.</div>
-      </div>
-    </div>
-
-    <div class="modal-note"><strong>Nota:</strong> O StudyOS só cria/lê eventos no seu Agenda — nunca lê outros dados. O token de acesso fica apenas na memória da sessão e é perdido ao fechar.</div>
-
-    <div style="display:flex;gap:8px;margin-top:20px">
-      <button class="btn btn-full" onclick="saveGcalConfig()">Salvar e conectar</button>
-      <button class="btn-ghost" onclick="closeModal('gcal-modal')">Cancelar</button>
+  <div class="modal" style="max-width:420px">
+    <div class="gcal-connect-box">
+      <div class="gcal-connect-icon">📅</div>
+      <div class="gcal-connect-title">Conectar ao Google Agenda</div>
+      <div class="gcal-connect-sub">O StudyOS precisa de permissão para criar eventos no seu Google Agenda com lembretes automáticos.<br><br>Uma janela do Google será aberta pedindo autorização — você controla o que permite.</div>
+      <button class="btn btn-full" onclick="_requestCalendarAccess()" style="margin-bottom:10px">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.8 6.1C12.4 13.4 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 6.9-10.1 6.9-17z"/><path fill="#FBBC05" d="M10.4 28.6c-.6-1.6-.9-3.3-.9-5.1s.3-3.5.8-5l-7.7-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.6l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.2-8.4 2.2-6.3 0-11.6-3.9-13.6-9.4l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg>
+        Autorizar com Google
+      </button>
+      <button class="btn-ghost btn-full" onclick="closeModal('gcal-modal')">Agora não</button>
+      <p style="font-size:11px;color:var(--t3);margin-top:14px;line-height:1.5">O StudyOS só cria eventos — nunca lê seus dados existentes. O token de acesso fica apenas na memória da sessão.</p>
     </div>
   </div>
 </div>
@@ -831,7 +811,10 @@ if (!_isConfigured) {
   firebase.initializeApp(_fbCfg);
   _auth = firebase.auth();
   _db   = firebase.firestore();
+  // Add Calendar scope so Google login users get it automatically in one popup
   const _gProvider = new firebase.auth.GoogleAuthProvider();
+  _gProvider.addScope('https://www.googleapis.com/auth/calendar.events');
+  _gProvider.setCustomParameters({ access_type: 'online', prompt: 'consent' });
 
   _auth.onAuthStateChanged(user => {
     if (user) {
@@ -839,10 +822,15 @@ if (!_isConfigured) {
       document.getElementById('login-screen').style.display = 'none';
       _updateUserUI(user);
       _subscribe(user.uid);
+      // Detect login provider — Google users get calendar auto-connected via doGoogleLogin token
+      _isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
     } else {
       _currentUid = null;
+      _isGoogleUser = false;
       document.getElementById('login-screen').style.display = 'flex';
       _setSyncStatus('off');
+      gcalToken = null;
+      updateGcalStatus(false);
     }
   });
 
@@ -905,7 +893,15 @@ if (!_isConfigured) {
   };
 
   window.doGoogleLogin = function() {
-    _auth.signInWithPopup(_gProvider).catch(e => _showLoginErr(_xlateErr(e.code)));
+    _auth.signInWithPopup(_gProvider).then(result => {
+      // Capture Google access token — already includes calendar.events scope
+      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      if (credential && credential.accessToken) {
+        gcalToken = credential.accessToken;
+        // Update UI after Firestore subscribe fires (small delay)
+        setTimeout(() => updateGcalStatus(true), 1500);
+      }
+    }).catch(e => _showLoginErr(_xlateErr(e.code)));
   };
 
   window.doLogout = function() {
@@ -981,6 +977,7 @@ let S={
 let taskFilter='todas';
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let gcalToken=null;
+let _isGoogleUser=false;
 
 // ════════════════════════════════════════════════════
 //  UTILS
@@ -1333,29 +1330,91 @@ function runSearch(q){
 // ════════════════════════════════════════════════════
 //  GOOGLE CALENDAR INTEGRATION
 // ════════════════════════════════════════════════════
-function openGcalSetup(){document.getElementById('gcal-modal').classList.add('open');if(S.gcalClientId)document.getElementById('gcal-client-id').value=S.gcalClientId;}
-function saveGcalConfig(){const id=document.getElementById('gcal-client-id').value.trim();if(!id){toast('Cole o Client ID antes de salvar.');return;}S.gcalClientId=id;save();closeModal('gcal-modal');initGcal();}
 
-function initGcal(){
-  if(!S.gcalClientId)return;
-  const script=document.createElement('script');
-  script.src='https://accounts.google.com/gsi/client';
-  script.onload=()=>setupGcalToken();
-  document.head.appendChild(script);
+// Called from topbar gcal-status button
+function openGcalSetup(){
+  if(gcalToken){
+    // Already connected — clicking again disconnects
+    gcalToken=null;
+    updateGcalStatus(false);
+    toast('Google Agenda desconectado.');
+    return;
+  }
+  if(_isGoogleUser){
+    // Google users: re-run the popup to refresh token
+    _requestCalendarAccess();
+  } else {
+    // Email/password users: show the connect modal
+    document.getElementById('gcal-modal').classList.add('open');
+  }
 }
 
-function setupGcalToken(){
-  if(typeof google==='undefined'||!S.gcalClientId)return;
-  try{
-    const tokenClient=google.accounts.oauth2.initTokenClient({client_id:S.gcalClientId,scope:'https://www.googleapis.com/auth/calendar.events',callback:(resp)=>{if(resp.access_token){gcalToken=resp.access_token;updateGcalStatus(true);toast('Google Agenda conectado! 📅');}}});
-    tokenClient.requestAccessToken();
-  }catch(e){console.warn('GCal init error:',e);updateGcalStatus(false);}
-}
+// Requests Calendar access — works for both Google and email users
+window._requestCalendarAccess = async function(){
+  closeModal('gcal-modal');
+  if(!_auth || !_auth.currentUser){toast('Faça login primeiro.');return;}
 
-function updateGcalStatus(connected){const dot=document.getElementById('gcal-dot');const lbl=document.getElementById('gcal-label');if(connected){dot.classList.add('connected');lbl.textContent='Agenda conectado';}else{dot.classList.remove('connected');lbl.textContent='Google Agenda';}}
+  if(_isGoogleUser){
+    // Re-authenticate with Google to get a fresh access token with calendar scope
+    try{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('https://www.googleapis.com/auth/calendar.events');
+      provider.setCustomParameters({login_hint: _auth.currentUser.email, prompt:'consent'});
+      const result = await _auth.currentUser.reauthenticateWithPopup(provider);
+      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      if(credential && credential.accessToken){
+        gcalToken = credential.accessToken;
+        updateGcalStatus(true);
+        toast('Google Agenda conectado! 📅');
+      }
+    }catch(e){
+      if(e.code!=='auth/popup-closed-by-user') toast('Erro ao conectar. Tente novamente.');
+    }
+  } else {
+    // Email/password users: sign in with Google in a popup JUST to get calendar token
+    // We re-sign into Firebase with Google — the user keeps their data via Firestore uid
+    // If they have a different Google account, we get their token regardless
+    try{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('https://www.googleapis.com/auth/calendar.events');
+      provider.setCustomParameters({prompt:'select_account'});
+      const result = await _auth.signInWithPopup(provider);
+      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      if(credential && credential.accessToken){
+        gcalToken = credential.accessToken;
+        updateGcalStatus(true);
+        toast('Google Agenda conectado! 📅');
+        // If this created a new Firebase user, merge data back
+        if(result.user && result.user.uid !== _currentUid){
+          // Restore previous user session data — just refresh Firestore listener
+          _subscribe(_currentUid);
+        }
+      }
+    }catch(e){
+      if(e.code!=='auth/popup-closed-by-user') toast('Erro ao conectar. Tente novamente.');
+    }
+  }
+};
+
+function updateGcalStatus(connected){
+  const dot=document.getElementById('gcal-dot');
+  const lbl=document.getElementById('gcal-label');
+  if(connected){
+    dot.classList.add('connected');
+    lbl.textContent='Agenda conectado';
+  }else{
+    dot.classList.remove('connected');
+    lbl.textContent='Google Agenda';
+  }
+}}
 
 async function addToGCal(task){
-  if(!gcalToken){toast('Conecte o Google Agenda primeiro nas configurações.');return;}
+  if(!gcalToken){
+    // Show the appropriate connect flow
+    if(_isGoogleUser){_requestCalendarAccess().then(()=>{if(gcalToken)addToGCal(task);});}
+    else{document.getElementById('gcal-modal').classList.add('open');}
+    return;
+  }
   const startDate=task.dataVenc+(task.hora?'T'+task.hora+':00':''  );
   const endDate=task.dataVenc+(task.hora?'T'+addOneHour(task.hora)+':00':'');
   const event={summary:`📚 ${task.texto}`,description:`Matéria: ${task.materiaId?getMateriaName(task.materiaId):'—'}\nPrioridade: ${task.prio}\nCriado pelo StudyOS`,start:task.hora?{dateTime:startDate,timeZone:'America/Sao_Paulo'}:{date:task.dataVenc},end:task.hora?{dateTime:endDate,timeZone:'America/Sao_Paulo'}:{date:addOneDay(task.dataVenc)},reminders:{useDefault:false,overrides:[{method:'popup',minutes:60},{method:'email',minutes:1440}]},colorId:'5'};
@@ -1389,7 +1448,7 @@ function _appReady(){
   renderSidebarPages();
   renderDashboard();
   populateMateriaSelects();
-  if(S.gcalClientId)setTimeout(()=>initGcal(),1000);
+  // Calendar token is obtained via login flow — no init needed here
 }
 
 function init(){
