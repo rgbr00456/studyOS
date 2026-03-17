@@ -831,10 +831,10 @@ if (!_isConfigured) {
   firebase.initializeApp(_fbCfg);
   _auth = firebase.auth();
   _db   = firebase.firestore();
-  // Add Calendar scope so Google login users get it automatically in one popup
+  // Simple Google provider for login — no extra scopes on first login
+  // Calendar access is requested separately after login to avoid silent failures
   const _gProvider = new firebase.auth.GoogleAuthProvider();
-  _gProvider.addScope('https://www.googleapis.com/auth/calendar.events');
-  _gProvider.setCustomParameters({ access_type: 'online', prompt: 'consent' });
+  _gProvider.setCustomParameters({ prompt: 'select_account' });
 
   _auth.onAuthStateChanged(user => {
     if (user) {
@@ -924,15 +924,17 @@ if (!_isConfigured) {
   };
 
   window.doGoogleLogin = function() {
-    _auth.signInWithPopup(_gProvider).then(result => {
-      // Capture Google access token — already includes calendar.events scope
-      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-      if (credential && credential.accessToken) {
-        gcalToken = credential.accessToken;
-        // Update UI after Firestore subscribe fires (small delay)
-        setTimeout(() => updateGcalStatus(true), 1500);
-      }
-    }).catch(e => _showLoginErr(_xlateErr(e.code)));
+    _auth.signInWithPopup(_gProvider)
+      .then(result => {
+        // Login successful — calendar access is requested separately via openGcalSetup()
+        // The onAuthStateChanged handler will take it from here
+      })
+      .catch(e => {
+        console.error('Google login error:', e.code, e.message);
+        if(e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request'){
+          _showLoginErr(_xlateErr(e.code));
+        }
+      });
   };
 
   window.doLogout = function() {
@@ -1380,49 +1382,43 @@ function openGcalSetup(){
   }
 }
 
-// Requests Calendar access — works for both Google and email users
+// Requests Calendar access via Google OAuth — called after login
 window._requestCalendarAccess = async function(){
   closeModal('gcal-modal');
-  if(!_auth || !_auth.currentUser){toast('Faça login primeiro.');return;}
-
-  if(_isGoogleUser){
-    // Re-authenticate with Google to get a fresh access token with calendar scope
-    try{
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope('https://www.googleapis.com/auth/calendar.events');
-      provider.setCustomParameters({login_hint: _auth.currentUser.email, prompt:'consent'});
+  if(!_auth || !_auth.currentUser){ toast('Faça login primeiro.'); return; }
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/calendar.events');
+    if(_isGoogleUser){
+      // Google users: re-auth to get token with calendar scope
+      provider.setCustomParameters({ login_hint: _auth.currentUser.email, prompt: 'consent' });
       const result = await _auth.currentUser.reauthenticateWithPopup(provider);
-      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-      if(credential && credential.accessToken){
-        gcalToken = credential.accessToken;
+      const cred = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+      if(cred && cred.accessToken){
+        gcalToken = cred.accessToken;
         updateGcalStatus(true);
         toast('Google Agenda conectado! 📅');
       }
-    }catch(e){
-      if(e.code!=='auth/popup-closed-by-user') toast('Erro ao conectar. Tente novamente.');
+    } else {
+      // Email/password users: link Google account to get calendar token
+      provider.setCustomParameters({ prompt: 'select_account' });
+      try{
+        // Try linking first (safest — keeps same Firebase UID)
+        const result = await _auth.currentUser.linkWithPopup(provider);
+        const cred = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+        if(cred && cred.accessToken){ gcalToken = cred.accessToken; }
+      } catch(linkErr){
+        // Already linked or different account — just get token via signIn
+        const result = await _auth.signInWithPopup(provider);
+        const cred = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
+        if(cred && cred.accessToken){ gcalToken = cred.accessToken; }
+      }
+      if(gcalToken){ updateGcalStatus(true); toast('Google Agenda conectado! 📅'); }
     }
-  } else {
-    // Email/password users: sign in with Google in a popup JUST to get calendar token
-    // We re-sign into Firebase with Google — the user keeps their data via Firestore uid
-    // If they have a different Google account, we get their token regardless
-    try{
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope('https://www.googleapis.com/auth/calendar.events');
-      provider.setCustomParameters({prompt:'select_account'});
-      const result = await _auth.signInWithPopup(provider);
-      const credential = firebase.auth.GoogleAuthProvider.credentialFromResult(result);
-      if(credential && credential.accessToken){
-        gcalToken = credential.accessToken;
-        updateGcalStatus(true);
-        toast('Google Agenda conectado! 📅');
-        // If this created a new Firebase user, merge data back
-        if(result.user && result.user.uid !== _currentUid){
-          // Restore previous user session data — just refresh Firestore listener
-          _subscribe(_currentUid);
-        }
-      }
-    }catch(e){
-      if(e.code!=='auth/popup-closed-by-user') toast('Erro ao conectar. Tente novamente.');
+  } catch(e){
+    console.error('Calendar access error:', e.code, e.message);
+    if(e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request'){
+      toast('Não foi possível conectar ao Google Agenda. Verifique se a Calendar API está ativa no Google Cloud.');
     }
   }
 };
