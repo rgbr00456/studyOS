@@ -808,7 +808,7 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 
 <script>
 
-// ── Early switchForm — works before Firebase initializes ──────────
+// ── switchForm — defined early so it works before Firebase initializes ──
 window.switchForm = function(mode){
   const fl = document.getElementById('form-login');
   const fr = document.getElementById('form-register');
@@ -963,10 +963,14 @@ if (!_isConfigured) {
     if (confirm('Sair da conta?')) { if(_unsubscribe)_unsubscribe(); _auth.signOut(); }
   };
 
+  // switchForm already defined globally above — Firebase version overrides with error clear
   window.switchForm = function(mode) {
-    document.getElementById('form-login').style.display    = mode==='login'?'block':'none';
-    document.getElementById('form-register').style.display = mode==='register'?'block':'none';
-    document.getElementById('login-error').style.display   = 'none';
+    const fl = document.getElementById('form-login');
+    const fr = document.getElementById('form-register');
+    const er = document.getElementById('login-error');
+    if(fl) fl.style.display = mode==='login'?'block':'none';
+    if(fr) fr.style.display = mode==='register'?'block':'none';
+    if(er) er.style.display = 'none';
   };
 
   function _showLoginErr(msg) {
@@ -996,18 +1000,19 @@ window.doGoogleRedirect = function(){
   _auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 
-// Fallbacks for non-configured mode
+// Fallbacks for non-configured mode (LS is declared globally below)
 if (!_isConfigured) {
-  const LS={
-    get:k=>{try{return JSON.parse(localStorage.getItem('sos_'+k));}catch{return null;}},
-    set:(k,v)=>{try{localStorage.setItem('sos_'+k,JSON.stringify(v));}catch(e){console.warn(e);}}
-  };
   window.save = function(){['pages','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal'].forEach(k=>LS.set(k,S[k]));};
   window.doLogin = ()=>{};
   window.doRegister = ()=>{};
   window.doGoogleLogin = ()=>{};
   window.doLogout = ()=>{};
-  window.switchForm = ()=>{};
+  window.switchForm = (mode)=>{
+    const fl=document.getElementById('form-login');
+    const fr=document.getElementById('form-register');
+    if(fl)fl.style.display=mode==='login'?'block':'none';
+    if(fr)fr.style.display=mode==='register'?'block':'none';
+  };
 }
 
 // ════════════════════════════════════════════════════
@@ -1461,7 +1466,7 @@ function updateGcalStatus(connected){
     dot.classList.remove('connected');
     lbl.textContent='Google Agenda';
   }
-}}
+}
 
 async function addToGCal(task){
   if(!gcalToken){
