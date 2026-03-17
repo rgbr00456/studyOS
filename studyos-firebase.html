@@ -798,6 +798,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.5)}
 <script src="https://apis.google.com/js/api.js" async></script>
 
 <script>
+
+// ── Early switchForm — works before Firebase initializes ──────────
+window.switchForm = function(mode){
+  const fl = document.getElementById('form-login');
+  const fr = document.getElementById('form-register');
+  if(fl) fl.style.display = mode==='login'?'block':'none';
+  if(fr) fr.style.display = mode==='register'?'block':'none';
+  const err = document.getElementById('login-error');
+  if(err) err.style.display = 'none';
+};
 // ════════════════════════════════════════════════════
 //  FIREBASE INIT
 // ════════════════════════════════════════════════════
@@ -1451,7 +1461,20 @@ function _appReady(){
   // Calendar token is obtained via login flow — no init needed here
 }
 
+function _handleUrlParams(){
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get('action');
+  if(action === 'login' || action === 'register'){
+    // Pre-show login screen immediately (Firebase will hide it once auth resolves)
+    const ls = document.getElementById('login-screen');
+    if(ls) ls.style.display = 'flex';
+    // Switch to the right form
+    if(typeof switchForm === 'function') switchForm(action === 'register' ? 'register' : 'login');
+  }
+}
+
 function init(){
+  _handleUrlParams();
   if(!_isConfigured){
     load();
     _appReady();
