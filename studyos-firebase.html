@@ -405,6 +405,79 @@ body.app-loading .main{opacity:0;pointer-events:none}
 body.app-ready .topbar,
 body.app-ready .sidebar,
 body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
+
+/* ── FORMATTING TOOLBAR ── */
+.fmt-toolbar{
+  position:fixed;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-lg);
+  padding:5px 8px;display:flex;align-items:center;gap:2px;box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.15s;white-space:nowrap;
+}
+.fmt-toolbar.visible{opacity:1;pointer-events:all}
+.fmt-btn{
+  width:28px;height:28px;border:none;background:none;border-radius:var(--r-sm);
+  color:var(--t2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:all 0.1s;font-family:var(--font-sans);
+}
+.fmt-btn:hover{background:var(--s3);color:var(--text)}
+.fmt-btn.active{background:var(--accent-dim);color:var(--accent)}
+.fmt-sep{width:1px;height:18px;background:var(--border2);margin:0 3px;flex-shrink:0}
+.fmt-highlight-btn{font-size:11px;font-weight:700;border-radius:4px;padding:0 5px;width:auto;height:24px}
+
+/* Highlight colors */
+.hl-yellow{background:#f5e642;color:#2a2600!important;border-radius:2px;padding:0 2px}
+.hl-green{background:#52c48a;color:#0a2010!important;border-radius:2px;padding:0 2px}
+.hl-blue{background:#6b9ae8;color:#050e28!important;border-radius:2px;padding:0 2px}
+.hl-pink{background:#e87a9a;color:#28000e!important;border-radius:2px;padding:0 2px}
+.hl-orange{background:#e8a84b;color:#28160a!important;border-radius:2px;padding:0 2px}
+
+/* Inline bold/italic/underline in blocks */
+.block b,.block strong{color:var(--accent2);font-weight:700}
+.block i,.block em{color:var(--t2);font-style:italic}
+.block u{text-decoration:underline;text-decoration-color:var(--accent)}
+
+/* ── FOLDER STRUCTURE in sidebar ── */
+.folder-item{
+  display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:var(--r-sm);
+  cursor:pointer;color:var(--t2);font-size:13px;font-weight:500;transition:all 0.12s;
+  user-select:none;
+}
+.folder-item:hover{background:var(--s3);color:var(--text)}
+.folder-item .folder-arrow{font-size:10px;transition:transform 0.15s;flex-shrink:0}
+.folder-item.open .folder-arrow{transform:rotate(90deg)}
+.folder-item .folder-icon{font-size:13px;width:16px;text-align:center}
+.folder-item .folder-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.folder-item .folder-count{font-size:10px;color:var(--t3);background:var(--s4);padding:1px 5px;border-radius:10px;flex-shrink:0}
+.folder-del{opacity:0;background:none;border:none;color:var(--t3);cursor:pointer;font-size:13px;padding:0 2px}
+.folder-item:hover .folder-del{opacity:1}
+.folder-pages{padding-left:14px;overflow:hidden;max-height:0;transition:max-height 0.2s ease}
+.folder-pages.open{max-height:500px}
+.no-folder-pages{padding:0 10px 4px}
+
+/* ── NEW PAGE MODAL ── */
+.new-page-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
+  z-index:800;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.new-page-modal.open{display:flex}
+.new-page-box{
+  background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-xl);
+  padding:24px;width:100%;max-width:420px;
+}
+.new-page-box h3{font-family:var(--font-serif);font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px}
+
+/* ── PAGE EDITOR toolbar row ── */
+.editor-topbar{
+  display:flex;align-items:center;gap:8px;padding:10px 60px;
+  border-bottom:1px solid var(--border);margin-bottom:0;position:sticky;top:0;
+  background:rgba(8,8,13,0.95);backdrop-filter:blur(8px);z-index:50;
+}
+.editor-folder-tag{
+  display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);
+  background:var(--s3);border-radius:20px;padding:3px 10px;cursor:pointer;border:none;
+  font-family:var(--font-sans);transition:all 0.12s;
+}
+.editor-folder-tag:hover{background:var(--s4);color:var(--text)}
+.editor-word-count{font-size:11px;color:var(--t3);margin-left:auto}
 </style>
 </head>
 <body class="app-loading">
@@ -517,9 +590,12 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
     </button>
   </div>
 
-  <div class="sidebar-section" style="border-top:1px solid var(--border);padding-top:12px;">
-    <div class="sidebar-label">Páginas de Estudo</div>
-    <div class="pages-list" id="pages-list"></div>
+  <div class="sidebar-section" style="border-top:1px solid var(--border);padding-top:12px;flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 8px 4px">
+      <div class="sidebar-label" style="margin:0">Caderno</div>
+      <button title="Nova pasta" onclick="newFolder()" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--t3)'">⊕</button>
+    </div>
+    <div class="pages-list" id="pages-list" style="flex:1;overflow-y:auto"></div>
     <button class="new-page-btn" onclick="newPage()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       Nova página
@@ -789,6 +865,48 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
   </div>
 </div>
 
+
+<!-- ── FORMATTING TOOLBAR ── -->
+<div class="fmt-toolbar" id="fmt-toolbar">
+  <button class="fmt-btn" id="fmt-bold" title="Negrito (Ctrl+B)" onclick="fmtExec('bold')"><b>B</b></button>
+  <button class="fmt-btn" id="fmt-italic" title="Itálico (Ctrl+I)" onclick="fmtExec('italic')"><i>I</i></button>
+  <button class="fmt-btn" id="fmt-underline" title="Sublinhado (Ctrl+U)" onclick="fmtExec('underline')"><u>U</u></button>
+  <button class="fmt-btn" id="fmt-strike" title="Tachado" onclick="fmtExec('strikeThrough')"><s>S</s></button>
+  <div class="fmt-sep"></div>
+  <button class="fmt-highlight-btn fmt-btn" style="background:#f5e642;color:#2a2600" title="Marca-texto amarelo" onclick="fmtHighlight('yellow')">A</button>
+  <button class="fmt-highlight-btn fmt-btn" style="background:#52c48a;color:#0a2010" title="Marca-texto verde" onclick="fmtHighlight('green')">A</button>
+  <button class="fmt-highlight-btn fmt-btn" style="background:#6b9ae8;color:#050e28" title="Marca-texto azul" onclick="fmtHighlight('blue')">A</button>
+  <button class="fmt-highlight-btn fmt-btn" style="background:#e87a9a;color:#28000e" title="Marca-texto rosa" onclick="fmtHighlight('pink')">A</button>
+  <button class="fmt-highlight-btn fmt-btn" style="background:#e8a84b;color:#28160a" title="Marca-texto laranja" onclick="fmtHighlight('orange')">A</button>
+  <button class="fmt-btn" title="Remover formatação" onclick="fmtExec('removeFormat')" style="font-size:11px;width:auto;padding:0 6px">✕ fmt</button>
+  <div class="fmt-sep"></div>
+  <button class="fmt-btn" title="Link" onclick="fmtLink()" style="font-size:11px">🔗</button>
+</div>
+
+<!-- ── NEW PAGE MODAL ── -->
+<div class="new-page-modal" id="new-page-modal">
+  <div class="new-page-box">
+    <h3>Nova página</h3>
+    <div class="inp-row">
+      <label class="inp-label">Título</label>
+      <input class="inp" id="np-title" placeholder="Nome da página..." onkeydown="if(event.key==='Enter')confirmNewPage()">
+    </div>
+    <div class="inp-row">
+      <label class="inp-label">Pasta (disciplina)</label>
+      <select class="inp" id="np-folder">
+        <option value="">Sem pasta</option>
+      </select>
+    </div>
+    <div class="inp-row">
+      <label class="inp-label">Ícone</label>
+      <input class="inp" id="np-emoji" placeholder="📄" style="text-align:center;width:70px">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-full" onclick="confirmNewPage()">Criar página</button>
+      <button class="btn-ghost" onclick="document.getElementById('new-page-modal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
 <!-- ── SEARCH MODAL ── -->
 <div class="modal-overlay" id="search-overlay" onclick="closeSearch(event)">
   <div class="search-modal" id="search-modal">
@@ -899,7 +1017,7 @@ if (!_isConfigured) {
     _unsubscribe = _db.collection('studyos_users').doc(uid).onSnapshot(doc => {
       if (doc.exists) {
         const data = doc.data();
-        const keys = ['pages','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal'];
+        const keys = ['pages','folders','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal','openFolders'];
         keys.forEach(k => { if (data[k] !== undefined) S[k] = data[k]; });
       }
       _setSyncStatus('ok');
@@ -912,7 +1030,7 @@ if (!_isConfigured) {
     clearTimeout(_saveTimer);
     _setSyncStatus('saving');
     const payload = {};
-    ['pages','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal'].forEach(k => payload[k] = S[k]);
+    ['pages','folders','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal','openFolders'].forEach(k => payload[k] = S[k]);
     _saveTimer = setTimeout(() => {
       _db.collection('studyos_users').doc(_currentUid).set(payload)
         .then(() => _setSyncStatus('ok'))
@@ -1002,7 +1120,7 @@ window.doGoogleRedirect = function(){
 
 // Fallbacks for non-configured mode (LS is declared globally below)
 if (!_isConfigured) {
-  window.save = function(){['pages','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal'].forEach(k=>LS.set(k,S[k]));};
+  window.save = function(){['pages','folders','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal','openFolders'].forEach(k=>LS.set(k,S[k]));};
   window.doLogin = ()=>{};
   window.doRegister = ()=>{};
   window.doGoogleLogin = ()=>{};
@@ -1022,13 +1140,14 @@ const LS={
   get:k=>{try{return JSON.parse(localStorage.getItem('sos_'+k));}catch{return null;}},
   set:(k,v)=>{try{localStorage.setItem('sos_'+k,JSON.stringify(v));}catch(e){console.warn(e);}}
 };
-function load(){['pages','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal'].forEach(k=>{const v=LS.get(k);if(v!==null)S[k]=v;});}
+function load(){['pages','folders','tasks','materias','horas','goals','pomo','pomoCfg','streak','gcalClientId','metaSemanal','openFolders'].forEach(k=>{const v=LS.get(k);if(v!==null)S[k]=v;});}
 
 // ════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════
 let S={
   pages:[],
+  folders:[],
   tasks:[],
   materias:[],
   horas:[0,0,0,0,0,0,0],
@@ -1038,7 +1157,8 @@ let S={
   streak:{lastDate:'',count:0},
   gcalClientId:'',
   metaSemanal:20,
-  currentPageId:null
+  currentPageId:null,
+  openFolders:[]
 };
 let taskFilter='todas';
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
@@ -1294,30 +1414,140 @@ function calSelectDay(iso){
 const COVER_GRADIENTS=['linear-gradient(135deg,#1a1a2e,#16213e)','linear-gradient(135deg,#0d1b2a,#1b2838)','linear-gradient(135deg,#1a0a0a,#2e1a00)','linear-gradient(135deg,#0a1a0a,#1a2e1a)','linear-gradient(135deg,#1a0a2e,#0a1a2e)','linear-gradient(135deg,#2e1a0a,#1a0a2e)'];
 let activeBlockEl=null;
 
-function newPage(){
-  const page={id:Date.now().toString(),title:'',emoji:'📄',cover:COVER_GRADIENTS[Math.floor(Math.random()*COVER_GRADIENTS.length)],blocks:[{id:Date.now().toString(),type:'paragraph',content:''}],updated:new Date().toLocaleDateString('pt-BR')};
-  S.pages.push(page);S.currentPageId=page.id;save();openPage(page.id);
+// ─── FOLDERS ────────────────────────────────────────
+function newFolder(){
+  const name=prompt('Nome da pasta (ex: Matemática, Biologia):');
+  if(!name||!name.trim())return;
+  const folder={id:Date.now().toString(),name:name.trim(),emoji:'📁'};
+  S.folders.push(folder);
+  if(!S.openFolders)S.openFolders=[];
+  S.openFolders.push(folder.id);
+  save();renderSidebarPages();toast('Pasta criada!');
 }
+function deleteFolder(id){
+  if(!confirm('Remover pasta? As páginas dentro ficarão sem pasta.'))return;
+  S.folders=S.folders.filter(f=>f.id!==id);
+  S.pages.forEach(p=>{if(p.folderId===id)p.folderId='';});
+  save();renderSidebarPages();
+}
+function toggleFolder(id){
+  if(!S.openFolders)S.openFolders=[];
+  const idx=S.openFolders.indexOf(id);
+  if(idx>=0)S.openFolders.splice(idx,1);else S.openFolders.push(id);
+  save();renderSidebarPages();
+}
+function populateFolderSelects(){
+  ['np-folder'].forEach(selId=>{
+    const el=document.getElementById(selId);if(!el)return;
+    const cur=el.value;
+    el.innerHTML='<option value="">Sem pasta</option>'+(S.folders||[]).map(f=>`<option value="${f.id}"${f.id===cur?' selected':''}>${f.emoji||'📁'} ${f.name}</option>`).join('');
+  });
+}
+
+// ─── NEW PAGE ─────────────────────────────────────────
+function newPage(){
+  populateFolderSelects();
+  document.getElementById('np-title').value='';
+  document.getElementById('np-emoji').value='';
+  document.getElementById('new-page-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('np-title').focus(),100);
+}
+function confirmNewPage(){
+  const title=document.getElementById('np-title').value.trim();
+  const emoji=document.getElementById('np-emoji').value.trim()||'📄';
+  const folderId=document.getElementById('np-folder').value;
+  const page={
+    id:Date.now().toString(),title,emoji,folderId,
+    cover:COVER_GRADIENTS[Math.floor(Math.random()*COVER_GRADIENTS.length)],
+    blocks:[{id:Date.now().toString(),type:'paragraph',content:''}],
+    updated:new Date().toLocaleDateString('pt-BR')
+  };
+  S.pages.push(page);S.currentPageId=page.id;
+  document.getElementById('new-page-modal').classList.remove('open');
+  save();openPage(page.id);
+}
+
 function openPage(id){S.currentPageId=id;const page=S.pages.find(p=>p.id===id);if(!page)return;renderPageEditor(page);showView('page');renderSidebarPages();}
-function deletePage(id){S.pages=S.pages.filter(p=>p.id!==id);if(S.currentPageId===id)S.currentPageId=null;save();renderSidebarPages();showView('dashboard');}
-function savePage(){const page=S.pages.find(p=>p.id===S.currentPageId);if(!page)return;page.updated=new Date().toLocaleDateString('pt-BR');save();renderSidebarPages();}
+function deletePage(id){
+  if(!confirm('Excluir esta página?'))return;
+  S.pages=S.pages.filter(p=>p.id!==id);
+  if(S.currentPageId===id)S.currentPageId=null;
+  save();renderSidebarPages();showView('dashboard');
+}
+function savePage(){
+  const page=S.pages.find(p=>p.id===S.currentPageId);if(!page)return;
+  page.updated=new Date().toLocaleDateString('pt-BR');
+  // Save HTML content of each block (preserves bold/italic/highlight)
+  document.querySelectorAll('#blocks-container [contenteditable][data-id]').forEach(el=>{
+    const b=page.blocks.find(b=>b.id===el.dataset.id);
+    if(b)b.content=el.innerHTML;
+  });
+  save();renderSidebarPages();
+}
 
 function renderSidebarPages(){
   const list=document.getElementById('pages-list');
-  list.innerHTML=S.pages.map(p=>`<div class="page-nav-item ${S.currentPageId===p.id?'active':''}" onclick="openPage('${p.id}')"><span class="page-emoji">${p.emoji||'📄'}</span><span class="page-title-nav">${p.title||'Sem título'}</span><button class="page-del" onclick="event.stopPropagation();deletePage('${p.id}')">×</button></div>`).join('');
+  if(!list)return;
+  const folders=S.folders||[];
+  const openFolders=S.openFolders||[];
+  let html='';
+
+  // Folders with their pages
+  folders.forEach(f=>{
+    const folderPages=S.pages.filter(p=>p.folderId===f.id);
+    const isOpen=openFolders.includes(f.id);
+    html+=`<div class="folder-item ${isOpen?'open':''}" onclick="toggleFolder('${f.id}')">
+      <span class="folder-arrow">▶</span>
+      <span class="folder-icon">${f.emoji||'📁'}</span>
+      <span class="folder-name">${f.name}</span>
+      <span class="folder-count">${folderPages.length}</span>
+      <button class="folder-del" onclick="event.stopPropagation();deleteFolder('${f.id}')">×</button>
+    </div>
+    <div class="folder-pages ${isOpen?'open':''}">
+      ${folderPages.map(p=>`<div class="page-nav-item ${S.currentPageId===p.id?'active':''}" onclick="openPage('${p.id}')"><span class="page-emoji">${p.emoji||'📄'}</span><span class="page-title-nav">${p.title||'Sem título'}</span><button class="page-del" onclick="event.stopPropagation();deletePage('${p.id}')">×</button></div>`).join('')}
+      ${folderPages.length===0?`<div style="font-size:12px;color:var(--t3);padding:4px 10px 6px">Pasta vazia</div>`:''}
+    </div>`;
+  });
+
+  // Pages without folder
+  const noFolderPages=S.pages.filter(p=>!p.folderId||!folders.find(f=>f.id===p.folderId));
+  if(noFolderPages.length>0){
+    html+=`<div class="no-folder-pages">`+noFolderPages.map(p=>`<div class="page-nav-item ${S.currentPageId===p.id?'active':''}" onclick="openPage('${p.id}')"><span class="page-emoji">${p.emoji||'📄'}</span><span class="page-title-nav">${p.title||'Sem título'}</span><button class="page-del" onclick="event.stopPropagation();deletePage('${p.id}')">×</button></div>`).join('')+`</div>`;
+  }
+
+  list.innerHTML=html||'<div style="font-size:12px;color:var(--t3);padding:8px 10px">Nenhuma página ainda</div>';
 }
 
 function renderPageEditor(page){
   const wrap=document.getElementById('page-editor-wrap');
+  const folder=page.folderId?(S.folders||[]).find(f=>f.id===page.folderId):null;
   wrap.innerHTML=`
-    <div class="page-cover" id="page-cover" style="background:${page.cover}" onclick="changeCover()">
-      <button class="page-cover-change">Alterar capa</button>
+    <div class="editor-topbar">
+      <button class="editor-folder-tag" onclick="movePageToFolder('${page.id}')">${folder?`${folder.emoji||'📁'} ${folder.name}`:'<span style="color:var(--t3)">+ Adicionar à pasta</span>'}</button>
+      <span class="editor-word-count" id="word-count">0 palavras</span>
     </div>
-    <div class="page-icon-wrap" onclick="changeEmoji()"><span class="page-icon" id="page-icon">${page.emoji||'📄'}</span></div>
-    <input class="page-title-inp" id="page-title" value="${page.title||''}" placeholder="Sem título" oninput="updatePageTitle(this.value)" onkeydown="titleKeydown(event)">
-    <div id="blocks-container"></div>
+    <div style="padding:20px 60px 0">
+      <div class="page-cover" id="page-cover" style="background:${page.cover}" onclick="changeCover()">
+        <button class="page-cover-change">Alterar capa</button>
+      </div>
+      <div class="page-icon-wrap" onclick="changeEmoji()"><span class="page-icon" id="page-icon">${page.emoji||'📄'}</span></div>
+      <input class="page-title-inp" id="page-title" value="${page.title||''}" placeholder="Sem título" oninput="updatePageTitle(this.value)" onkeydown="titleKeydown(event)">
+    </div>
+    <div id="blocks-container" style="padding:0 60px 80px"></div>
   `;
   renderBlocks(page);
+}
+
+function movePageToFolder(pageId){
+  populateFolderSelects();
+  const page=S.pages.find(p=>p.id===pageId);
+  if(!page)return;
+  const sel=document.getElementById('np-folder');
+  if(sel&&page.folderId)sel.value=page.folderId;
+  // Reuse modal but just pick folder
+  document.getElementById('np-title').value=page.title||'';
+  document.getElementById('np-emoji').value=page.emoji||'📄';
+  document.getElementById('new-page-modal').classList.add('open');
 }
 
 function updatePageTitle(val){const page=S.pages.find(p=>p.id===S.currentPageId);if(page){page.title=val;savePage();renderSidebarPages();}}
@@ -1331,6 +1561,14 @@ function renderBlocks(page){
   if(!cont)return;
   cont.innerHTML=page.blocks.map(b=>renderBlockHTML(b,page)).join('');
   cont.querySelectorAll('[contenteditable]').forEach(el=>attachBlockListeners(el,page));
+  updateWordCount(page);
+}
+function updateWordCount(page){
+  const wc=document.getElementById('word-count');
+  if(!wc)return;
+  const text=page.blocks.map(b=>{const tmp=document.createElement('div');tmp.innerHTML=b.content||'';return tmp.textContent||'';}).join(' ');
+  const words=text.trim().split(/\s+/).filter(w=>w.length>0).length;
+  wc.textContent=`${words} palavra${words!==1?'s':''}`;
 }
 
 function renderBlockHTML(b,page){
@@ -1351,9 +1589,26 @@ function renderBlockHTML(b,page){
 }
 
 function attachBlockListeners(el,page){
-  el.addEventListener('input',()=>{const b=page.blocks.find(b=>b.id===el.dataset.id);if(b){b.content=el.innerText;const txt=el.innerText;if(txt.startsWith('/')){showSlashMenu(el);} else {hideSlashMenu();}savePage();}});
+  el.addEventListener('input',()=>{
+    const b=page.blocks.find(b=>b.id===el.dataset.id);
+    if(b){
+      b.content=el.innerHTML;
+      const txt=el.innerText;
+      if(txt.startsWith('/')){showSlashMenu(el);}else{hideSlashMenu();}
+      updateWordCount(page);
+      savePageDebounced();
+    }
+  });
   el.addEventListener('keydown',e=>{handleBlockKeydown(e,el,page);});
-  el.addEventListener('focus',()=>{activeBlockEl=el;});
+  el.addEventListener('focus',()=>{activeBlockEl=el;hideFormattingToolbar();});
+  el.addEventListener('mouseup',()=>setTimeout(showFormattingToolbar,10));
+  el.addEventListener('keyup',()=>setTimeout(showFormattingToolbar,10));
+}
+
+let _savePageTimer=null;
+function savePageDebounced(){
+  clearTimeout(_savePageTimer);
+  _savePageTimer=setTimeout(()=>savePage(),800);
 }
 
 function handleBlockKeydown(e,el,page){
@@ -1378,6 +1633,76 @@ let slashAnchorEl=null;
 function showSlashMenu(el){slashAnchorEl=el;const menu=document.getElementById('slash-menu');const rect=el.getBoundingClientRect();menu.style.top=(rect.bottom+4)+'px';menu.style.left=rect.left+'px';menu.classList.add('visible');}
 function hideSlashMenu(){document.getElementById('slash-menu').classList.remove('visible');slashAnchorEl=null;}
 function insertBlock(type){if(!slashAnchorEl)return;hideSlashMenu();const page=S.pages.find(p=>p.id===S.currentPageId);if(!page)return;const b=page.blocks.find(b=>b.id===slashAnchorEl.dataset.id);if(b){b.type=type;b.content='';savePage();renderBlocks(page);setTimeout(()=>{const el=document.querySelector(`[data-id="${b.id}"]`);if(el&&el.contentEditable==='true')el.focus();},10);}else addBlock(page,type,slashAnchorEl.dataset.id);}
+
+// ════════════════════════════════════════════════════
+//  FORMATTING TOOLBAR
+// ════════════════════════════════════════════════════
+function showFormattingToolbar(){
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed||!sel.toString().trim()){hideFormattingToolbar();return;}
+  // Only show inside page editor blocks
+  const range=sel.getRangeAt(0);
+  const container=range.commonAncestorContainer;
+  const block=container.nodeType===3?container.parentElement:container;
+  if(!block.closest('#blocks-container')){hideFormattingToolbar();return;}
+  const rect=range.getBoundingClientRect();
+  const toolbar=document.getElementById('fmt-toolbar');
+  let left=rect.left+rect.width/2-toolbar.offsetWidth/2;
+  let top=rect.top-48+window.scrollY;
+  if(left<8)left=8;
+  if(left+toolbar.offsetWidth>window.innerWidth-8)left=window.innerWidth-toolbar.offsetWidth-8;
+  toolbar.style.left=left+'px';
+  toolbar.style.top=top+'px';
+  toolbar.classList.add('visible');
+  // Update active state
+  document.getElementById('fmt-bold').classList.toggle('active',document.queryCommandState('bold'));
+  document.getElementById('fmt-italic').classList.toggle('active',document.queryCommandState('italic'));
+  document.getElementById('fmt-underline').classList.toggle('active',document.queryCommandState('underline'));
+}
+
+function hideFormattingToolbar(){
+  document.getElementById('fmt-toolbar').classList.remove('visible');
+}
+
+function fmtExec(cmd){
+  document.execCommand(cmd,false,null);
+  showFormattingToolbar();
+  savePageDebounced();
+}
+
+function fmtHighlight(color){
+  const colors={yellow:'#f5e642',green:'#52c48a',blue:'#6b9ae8',pink:'#e87a9a',orange:'#e8a84b'};
+  const textColors={yellow:'#2a2600',green:'#0a2010',blue:'#050e28',pink:'#28000e',orange:'#28160a'};
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed)return;
+  const range=sel.getRangeAt(0);
+  const span=document.createElement('span');
+  span.className=`hl-${color}`;
+  span.style.background=colors[color];
+  span.style.color=textColors[color];
+  span.style.borderRadius='2px';
+  span.style.padding='0 2px';
+  try{range.surroundContents(span);}
+  catch(e){
+    // Selection crosses elements — use execCommand instead
+    document.execCommand('hiliteColor',false,colors[color]);
+  }
+  savePageDebounced();
+  hideFormattingToolbar();
+}
+
+function fmtLink(){
+  const url=prompt('URL do link:','https://');
+  if(url)document.execCommand('createLink',false,url);
+  savePageDebounced();
+}
+
+// Hide toolbar when clicking outside
+document.addEventListener('mousedown',e=>{
+  if(!e.target.closest('#fmt-toolbar')&&!e.target.closest('#blocks-container')){
+    hideFormattingToolbar();
+  }
+});
 
 // ════════════════════════════════════════════════════
 //  SEARCH
@@ -1493,8 +1818,16 @@ function addOneDay(iso){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+
 //  KEYBOARD SHORTCUTS
 // ════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}
-  if(e.key==='Escape'){hideSlashMenu();document.getElementById('search-overlay').classList.remove('open');document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='b'&&activeBlockEl){e.preventDefault();fmtExec('bold');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='i'&&activeBlockEl){e.preventDefault();fmtExec('italic');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='u'&&activeBlockEl){e.preventDefault();fmtExec('underline');return;}
+  if(e.key==='Escape'){
+    hideSlashMenu();hideFormattingToolbar();
+    document.getElementById('search-overlay').classList.remove('open');
+    document.getElementById('new-page-modal').classList.remove('open');
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
+  }
 });
 document.addEventListener('click',e=>{if(!e.target.closest('#slash-menu')&&!e.target.closest('[contenteditable]'))hideSlashMenu();});
 
