@@ -22,6 +22,24 @@
   --mono:'JetBrains Mono',monospace;
   --nav-h:64px;
 }
+/* ── LIGHT MODE ── */
+body.light-mode{
+  --bg:#f7f5f0;--s1:#ffffff;--s2:#f0ece5;--s3:#e8e3da;--s4:#ddd8ce;--s5:#d4cfc4;
+  --accent:#7a5820;--accent2:#9a7030;--accent-dim:rgba(122,88,32,0.12);
+  --text:#1a1510;--t2:#5a5248;--t3:#8a8278;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.12);
+}
+body.light-mode nav.scrolled{background:rgba(247,245,240,0.92)}
+body.light-mode .preview-frame{box-shadow:0 40px 80px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.06)}
+body.light-mode .how-visual-frame{box-shadow:0 20px 40px rgba(0,0,0,0.1)}
+body.light-mode .feature-card:hover{background:var(--s2)}
+/* Theme toggle button */
+.theme-btn{
+  background:none;border:1px solid var(--border2);border-radius:8px;
+  color:var(--t2);cursor:pointer;font-size:16px;line-height:1;
+  padding:7px 10px;transition:all 0.2s;display:inline-flex;align-items:center;
+}
+.theme-btn:hover{border-color:var(--accent);color:var(--accent)}
 html{scroll-behavior:smooth;font-size:16px}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
 
@@ -36,7 +54,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 48px;transition:all 0.3s}
-nav.scrolled{background:rgba(6,6,10,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+nav.scrolled{background:rgba(6,6,10,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);transition:background 0.3s}
 .nav-logo{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--accent);font-style:italic;letter-spacing:-0.01em;text-decoration:none}
 .nav-right{display:flex;align-items:center;gap:12px}
 .btn-login{background:transparent;border:1px solid var(--border2);color:var(--t2);border-radius:8px;font-family:var(--sans);font-size:14px;padding:9px 20px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block}
@@ -222,6 +240,7 @@ footer{border-top:1px solid var(--border);padding:40px 48px;display:flex;align-i
 <nav id="navbar">
   <a href="#" class="nav-logo">StudyOS</a>
   <div class="nav-right">
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Alternar tema">🌙</button>
     <a href="studyos-firebase.html?action=login" class="btn-login">Entrar</a>
     <a href="studyos-firebase.html?action=register" class="btn-cta-sm">Comece grátis</a>
   </div>
@@ -420,7 +439,7 @@ footer{border-top:1px solid var(--border);padding:40px 48px;display:flex;align-i
             <div style="background:var(--s2);border:1px solid var(--border2);border-radius:14px;padding:24px;max-width:280px;margin:0 auto;width:100%">
               <div style="font-family:var(--serif);font-size:20px;color:var(--accent);font-style:italic;text-align:center;margin-bottom:4px">StudyOS</div>
               <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:20px">Entre na sua conta</div>
-              <div style="background:var(--s3);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--t3);margin-bottom:8px">seu@email.com</div>
+              <div style="background:var(--s3);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--t3);margin-bottom:8px"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4a7b1a194b1b9b5bdb8fab7bbb9">[email&#160;protected]</a></div>
               <div style="background:var(--s3);border:1px solid var(--border2);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--t3);margin-bottom:12px">••••••••</div>
               <div style="background:var(--accent);color:var(--bg);border-radius:7px;padding:10px;text-align:center;font-size:13px;font-weight:600;margin-bottom:10px">Entrar</div>
               <div style="border:1px solid var(--border2);border-radius:7px;padding:9px;text-align:center;font-size:12px;color:var(--t2);display:flex;align-items:center;justify-content:center;gap:6px">🔑 Entrar com Google</div>
@@ -523,6 +542,23 @@ footer{border-top:1px solid var(--border);padding:40px 48px;display:flex;align-i
 </footer>
 
 <script>
+// ── THEME TOGGLE ──────────────────────────────────────
+function toggleTheme(){
+  const isLight = document.body.classList.toggle('light-mode');
+  document.getElementById('theme-btn').textContent = isLight ? '☀️' : '🌙';
+  try{ localStorage.setItem('studyos_landing_theme', isLight ? 'light' : 'dark'); }catch(e){}
+}
+
+(function initLandingTheme(){
+  const saved = localStorage.getItem('studyos_landing_theme') ||
+                localStorage.getItem('sos_theme');
+  if(saved === 'light'){
+    document.body.classList.add('light-mode');
+    const btn = document.getElementById('theme-btn');
+    if(btn) btn.textContent = '☀️';
+  }
+})();
+</script><script>
 // ── CURSOR ──
 const cur = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
