@@ -2,12 +2,26 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<!-- Security: restrict resource origins -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self' https://*.googleapis.com https://*.gstatic.com https://*.firebaseapp.com https://*.firebaseio.com https://cdnjs.cloudflare.com https://accounts.google.com https://www.googleapis.com;
+  script-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://accounts.google.com https://www.gstatic.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  img-src 'self' data: https://*.googleusercontent.com https://*.google.com blob:;
+  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebaseio.com;
+  frame-src 'none';
+  object-src 'none';
+  base-uri 'self';
+">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>StudyOS</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <!-- ══════════════════════════════════════════════════════════════
-     FIREBASE — substitua cada "COLE_AQUI" pelas suas credenciais
+     FIREBASE — credenciais
      ══════════════════════════════════════════════════════════════ -->
 <script>
   window.FIREBASE_CONFIG = {
@@ -47,6 +61,25 @@
   --shadow:0 4px 24px rgba(0,0,0,0.4);
   --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
 }
+/* ── LIGHT MODE ── */
+body.light-mode{
+  --bg:#f5f4f0;--s1:#ffffff;--s2:#f0ede8;--s3:#e8e4de;--s4:#ddd9d2;--s5:#d4d0c8;
+  --accent:#8a6530;--accent2:#a07840;--accent-dim:rgba(138,101,48,0.12);--accent-glow:rgba(138,101,48,0.06);
+  --text:#1a1814;--t2:#5a5650;--t3:#8a8680;--t4:#b0aca8;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);--border3:rgba(0,0,0,0.2);
+  --green:#1a7a4a;--green-dim:rgba(26,122,74,0.12);
+  --blue:#1a4e9e;--blue-dim:rgba(26,78,158,0.12);
+  --red:#a02020;--red-dim:rgba(160,32,32,0.12);
+  --purple:#5a2ea0;--purple-dim:rgba(90,46,160,0.12);
+  --amber:#7a4e10;--amber-dim:rgba(122,78,16,0.12);
+  --shadow:0 4px 24px rgba(0,0,0,0.12);
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.08);
+}
+body.light-mode .topbar{background:rgba(245,244,240,0.95)}
+body.light-mode .login-box,body.light-mode .modal{box-shadow:0 8px 32px rgba(0,0,0,0.15)}
+body.light-mode .block.code{background:#e8e4de;color:#1a6a30}
+body.light-mode .fmt-toolbar{background:#ffffff;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+body.light-mode .fmt-toolbar::after{background:#ffffff}
 html,body{height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow:hidden;font-size:14px;line-height:1.6}
 
 /* ── TOPBAR ── */
@@ -610,6 +643,11 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
     <div class="streak-badge" id="streak-badge">🔥 <span id="streak-num">0</span> dias</div>
   </div>
   <div class="sync-pill" id="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">—</span></div>
+  <button id="theme-toggle" onclick="toggleTheme()" title="Alternar modo claro/escuro"
+    style="background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--t2);
+           cursor:pointer;padding:5px 8px;font-size:15px;line-height:1;transition:all 0.15s;display:flex;align-items:center">
+    🌙
+  </button>
   <div class="user-pill" id="user-pill" onclick="doLogout()" title="Clique para sair">
     <div class="user-avatar" id="user-avatar">?</div>
     <span class="user-name-topbar" id="user-name-topbar">—</span>
@@ -930,6 +968,48 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 
 <!-- ── FLOATING FORMATTING TOOLBAR ── -->
 <div class="fmt-toolbar" id="fmt-toolbar">
+
+  <!-- Font family -->
+  <select class="fmt-select" id="fmt-font" title="Fonte"
+    onmousedown="event.stopPropagation()"
+    onchange="fmtFont(this.value)"
+    style="width:90px;font-size:11px;padding:2px 4px;background:var(--s2);border:1px solid var(--border2);border-radius:5px;color:var(--text);cursor:pointer;outline:none">
+    <option value="">Fonte</option>
+    <option value="DM Sans, sans-serif">DM Sans</option>
+    <option value="Playfair Display, serif">Playfair</option>
+    <option value="JetBrains Mono, monospace">Mono</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="Arial, sans-serif">Arial</option>
+  </select>
+
+  <!-- Font size -->
+  <select class="fmt-select" id="fmt-size" title="Tamanho"
+    onmousedown="event.stopPropagation()"
+    onchange="fmtSize(this.value)"
+    style="width:52px;font-size:11px;padding:2px 4px;background:var(--s2);border:1px solid var(--border2);border-radius:5px;color:var(--text);cursor:pointer;outline:none">
+    <option value="">Tam.</option>
+    <option value="1">10</option>
+    <option value="2">13</option>
+    <option value="3">16</option>
+    <option value="4">18</option>
+    <option value="5">24</option>
+    <option value="6">32</option>
+    <option value="7">48</option>
+  </select>
+
+  <div class="fmt-sep"></div>
+
+  <!-- Undo -->
+  <button class="fmt-btn" title="Desfazer (Ctrl+Z)" onmousedown="event.preventDefault();fmtUndo()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13A9 9 0 1 0 5.5 5.5L3 7"/></svg>
+  </button>
+  <!-- Redo -->
+  <button class="fmt-btn" title="Avançar (Ctrl+Y)" onmousedown="event.preventDefault();fmtRedo()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M21 13A9 9 0 1 1 18.5 5.5L21 7"/></svg>
+  </button>
+
+  <div class="fmt-sep"></div>
+
   <!-- Bold -->
   <button class="fmt-btn" id="fmt-bold" title="Negrito (Ctrl+B)" onmousedown="event.preventDefault();fmtExec('bold')">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h8a4 4 0 010 8H6V4zm0 8h9a4 4 0 010 8H6v-8z"/></svg>
@@ -961,13 +1041,13 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 
   <div class="fmt-sep"></div>
 
-  <!-- Clear all formatting -->
-  <button class="fmt-btn" title="Limpar formatação" onmousedown="event.preventDefault();fmtExec('removeFormat')" style="font-size:10px;width:26px;color:var(--t3)">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 15.88L4 20"/><path d="M20 4L8 16M4 20l4-4"/></svg>
+  <!-- Eraser (remove all formatting) -->
+  <button class="fmt-btn" title="Borracha — limpar toda formatação" onmousedown="event.preventDefault();fmtErase()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-3.5 3.5"/><path d="M6.0 11.0 l7 7"/></svg>
   </button>
 
   <!-- Link -->
-  <button class="fmt-btn" title="Inserir link" onmousedown="event.preventDefault();fmtLink()" style="font-size:11px">
+  <button class="fmt-btn" title="Inserir link" onmousedown="event.preventDefault();fmtLink()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
   </button>
 </div>
@@ -1025,6 +1105,84 @@ window.switchForm = function(mode){
   if(err) err.style.display = 'none';
 };
 // ════════════════════════════════════════════════════
+//  SECURITY UTILITIES
+// ════════════════════════════════════════════════════
+// Escape HTML entities — use for ALL user text rendered into innerHTML
+function esc(str){
+  if(str==null)return'';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;')
+    .replace(/`/g,'&#96;');
+}
+
+// Sanitize a URL — only allow http/https/mailto
+function safeUrl(url){
+  if(!url)return'#';
+  const u=String(url).trim();
+  if(/^https?:\/\//i.test(u)||/^mailto:/i.test(u))return u;
+  return'#';
+}
+
+// Validate and clamp numeric input
+function safeNum(val,min,max,fallback){
+  const n=parseFloat(val);
+  if(isNaN(n))return fallback;
+  return Math.min(max,Math.max(min,n));
+}
+
+// Sanitize text for safe use as attribute values (IDs, onclick params)
+function safeId(id){
+  return String(id).replace(/[^a-zA-Z0-9_-]/g,'');
+}
+
+// Strip dangerous HTML from block content (keep safe formatting tags only)
+const _ALLOWED_TAGS=/^(b|i|u|s|strong|em|span|br|a|mark)$/i;
+function sanitizeBlockHtml(dirty){
+  if(!dirty)return'';
+  const tmp=document.createElement('div');
+  tmp.innerHTML=dirty;
+  const walk=(node)=>{
+    for(let i=node.childNodes.length-1;i>=0;i--){
+      const child=node.childNodes[i];
+      if(child.nodeType===1){
+        const tag=child.tagName.toLowerCase();
+        if(!_ALLOWED_TAGS.test(tag)){
+          // Replace disallowed element with its text content
+          const txt=document.createTextNode(child.textContent||'');
+          node.replaceChild(txt,child);
+        } else {
+          // Keep tag but strip dangerous attributes
+          const attrs=Array.from(child.attributes);
+          attrs.forEach(a=>{
+            const name=a.name.toLowerCase();
+            if(name.startsWith('on')||name==='srcdoc'){child.removeAttribute(a.name);}
+            if(name==='href'||name==='src'){child.setAttribute(a.name,safeUrl(a.value));}
+          });
+          walk(child);
+        }
+      }
+    }
+  };
+  walk(tmp);
+  return tmp.innerHTML;
+}
+
+// Rate limiter for auth attempts
+const _authAttempts={count:0,reset:0};
+function checkAuthRateLimit(){
+  const now=Date.now();
+  if(now>_authAttempts.reset){_authAttempts.count=0;_authAttempts.reset=now+60000;}
+  _authAttempts.count++;
+  if(_authAttempts.count>10){
+    throw new Error('Muitas tentativas. Aguarde um minuto.');
+  }
+}
+
+// ════════════════════════════════════════════════════
 //  FIREBASE INIT
 // ════════════════════════════════════════════════════
 const _fbCfg = window.FIREBASE_CONFIG;
@@ -1077,7 +1235,7 @@ if (!_isConfigured) {
     const name = user.displayName || user.email.split('@')[0];
     document.getElementById('user-name-topbar').textContent = name;
     const av = document.getElementById('user-avatar');
-    av.innerHTML = user.photoURL ? `<img src="${user.photoURL}" alt="">` : name[0].toUpperCase();
+    av.innerHTML = user.photoURL ? `<img src="${safeUrl(user.photoURL)}" alt="" referrerpolicy="no-referrer">` : esc(name[0]||'?').toUpperCase();
   }
 
   function _setSyncStatus(s) {
@@ -1128,9 +1286,11 @@ if (!_isConfigured) {
   };
 
   window.doLogin = function() {
+    try{ checkAuthRateLimit(); }catch(e){ _showLoginErr(e.message); return; }
     const email = document.getElementById('l-email').value.trim();
     const senha = document.getElementById('l-senha').value;
     if(!email || !senha){ _showLoginErr('Preencha e-mail e senha.'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ _showLoginErr('E-mail inválido.'); return; }
     _auth.signInWithEmailAndPassword(email, senha)
       .catch(e => {
         console.error('Login error:', e.code, e.message);
@@ -1139,13 +1299,17 @@ if (!_isConfigured) {
   };
 
   window.doRegister = function() {
+    try{ checkAuthRateLimit(); }catch(e){ _showLoginErr(e.message); return; }
     const name = document.getElementById('r-nome').value.trim();
-    if (!name) { _showLoginErr('Informe seu nome.'); return; }
-    _auth.createUserWithEmailAndPassword(
-      document.getElementById('r-email').value.trim(),
-      document.getElementById('r-senha').value
-    ).then(c => c.user.updateProfile({ displayName: name }))
-     .catch(e => _showLoginErr(_xlateErr(e.code)));
+    const email = document.getElementById('r-email').value.trim();
+    const senha = document.getElementById('r-senha').value;
+    if(!name){ _showLoginErr('Informe seu nome.'); return; }
+    if(name.length>80){ _showLoginErr('Nome muito longo.'); return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ _showLoginErr('E-mail inválido.'); return; }
+    if(senha.length<6){ _showLoginErr('Senha deve ter pelo menos 6 caracteres.'); return; }
+    _auth.createUserWithEmailAndPassword(email, senha)
+      .then(c => c.user.updateProfile({ displayName: esc(name) }))
+      .catch(e => _showLoginErr(_xlateErr(e.code)));
   };
 
   window.doGoogleLogin = function() {
@@ -1271,7 +1435,7 @@ function fmtISOFull(iso){if(!iso)return'';const[y,mo,d]=iso.split('-');return`${
 function isoToday(){return getTodayISO();}
 function isThisWeek(iso){if(!iso)return false;const d=new Date(iso+'T00:00:00'),now=new Date();const start=new Date(now);start.setDate(now.getDate()-now.getDay()+1);start.setHours(0,0,0,0);const end=new Date(start);end.setDate(start.getDate()+7);return d>=start&&d<end;}
 function updateTasksBadge(){const n=S.tasks.filter(t=>!t.done).length;const b=document.getElementById('tasks-badge');if(b)b.textContent=n;}
-function populateMateriaSelects(){['t-materia','timer-materia'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Nenhuma</option>'+S.materias.map(m=>`<option value="${m.id}"${m.id===cur?' selected':''}>${m.emoji||'📖'} ${m.nome}</option>`).join('');});const tmsel=document.getElementById('timer-materia');if(tmsel){const cur2=tmsel.value;tmsel.innerHTML='<option value="">Selecione a matéria</option>'+S.materias.map(m=>`<option value="${m.id}"${m.id===cur2?' selected':''}>${m.emoji||'📖'} ${m.nome}</option>`).join('');}}
+function populateMateriaSelects(){['t-materia','timer-materia'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const cur=el.value;el.innerHTML='<option value="">Nenhuma</option>'+S.materias.map(m=>`<option value="${m.id}"${m.id===cur?' selected':''}>${esc(m.emoji||'📖')} ${esc(m.nome)}</option>`).join('');});const tmsel=document.getElementById('timer-materia');if(tmsel){const cur2=tmsel.value;tmsel.innerHTML='<option value="">Selecione a matéria</option>'+S.materias.map(m=>`<option value="${m.id}"${m.id===cur2?' selected':''}>${esc(m.emoji||'📖')} ${esc(m.nome)}</option>`).join('');}}
 
 // ════════════════════════════════════════════════════
 //  NAVIGATION
@@ -1329,7 +1493,7 @@ function renderDashboard(){
   // Materias list
   const ml=document.getElementById('d-materias-list');
   if(!S.materias.length){ml.innerHTML='<div style="font-size:13px;color:var(--t3);padding:8px 0;">Nenhuma matéria cadastrada</div>';}
-  else ml.innerHTML=S.materias.slice(0,5).map((m,i)=>{const med=matMedia(m),pct=med!==null?Math.min(100,med*10):0,cor=CORES[i%CORES.length];return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;color:var(--text);flex:1">${m.emoji||'📖'} ${m.nome}</span><div style="flex:1"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${cor}"></div></div></div><span style="font-family:var(--font-serif);font-size:15px;font-weight:600;color:${cor};min-width:30px;text-align:right">${med!==null?med.toFixed(1):'—'}</span></div>`;}).join('');
+  else ml.innerHTML=S.materias.slice(0,5).map((m,i)=>{const med=matMedia(m),pct=med!==null?Math.min(100,med*10):0,cor=CORES[i%CORES.length];return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;color:var(--text);flex:1">${esc(m.emoji||'📖')} ${esc(m.nome)}</span><div style="flex:1"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${cor}"></div></div></div><span style="font-family:var(--font-serif);font-size:15px;font-weight:600;color:${cor};min-width:30px;text-align:right">${med!==null?med.toFixed(1):'—'}</span></div>`;}).join('');
 
   // Tasks
   const tl=document.getElementById('d-tasks-list');
@@ -1340,14 +1504,14 @@ function renderDashboard(){
   // Pages
   const pl=document.getElementById('d-pages-list');
   if(!S.pages.length){pl.innerHTML='<div style="font-size:13px;color:var(--t3);padding:8px 0;">Nenhuma página criada</div>';}
-  else pl.innerHTML=S.pages.slice(-5).reverse().map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openPage('${p.id}')"><span style="font-size:14px">${p.emoji||'📄'}</span><span style="font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title||'Sem título'}</span><span style="font-size:11px;color:var(--t3)">${p.updated||''}</span></div>`).join('');
+  else pl.innerHTML=S.pages.slice(-5).reverse().map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openPage('${p.id}')"><span style="font-size:14px">${esc(p.emoji||'📄')}</span><span style="font-size:13px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.title||'Sem título')}</span><span style="font-size:11px;color:var(--t3)">${p.updated||''}</span></div>`).join('');
 }
 
 // ════════════════════════════════════════════════════
 //  TASKS
 // ════════════════════════════════════════════════════
 function addTask(){
-  const texto=document.getElementById('t-texto').value.trim();
+  const texto=document.getElementById('t-texto').value.trim().substring(0,500);
   if(!texto){toast('Digite a descrição da tarefa.');return;}
   const task={id:Date.now().toString(),texto,materiaId:document.getElementById('t-materia').value,prio:document.getElementById('t-prio').value,dataVenc:document.getElementById('t-data').value,hora:document.getElementById('t-hora').value,done:false,gcalId:'',criado:getTodayISO()};
   S.tasks.push(task);
@@ -1380,8 +1544,8 @@ function renderTasks(){
   if(!tasks.length){cont.innerHTML='<div style="font-size:13px;color:var(--t3);padding:20px;text-align:center">Nenhuma tarefa nesta categoria</div>';return;}
   const pending=tasks.filter(t=>!t.done),done=tasks.filter(t=>t.done);
   let html='';
-  if(pending.length){html+=`<div class="section-head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> Pendentes (${pending.length})</div>`;html+=pending.map(t=>`<div class="task-row"><input type="checkbox" class="task-cb" ${t.done?'checked':''} onchange="toggleTask('${t.id}')"><div class="task-body"><div class="task-text">${t.texto}</div><div class="task-meta">${t.materiaId?`<span class="badge badge-neutral">${getMateriaName(t.materiaId)}</span>`:''}<span class="badge ${pc[t.prio]||'badge-neutral'}">${t.prio}</span>${t.dataVenc?`<span style="font-size:11px;color:var(--t2)">📅 ${fmtISOFull(t.dataVenc)}${t.hora?' '+t.hora:''}</span>`:''}<span class="task-gcal-icon ${t.gcalId?'synced':''}">${t.gcalId?'📅 Agendado':''}</span></div></div><button class="task-del" onclick="deleteTask('${t.id}')">×</button></div>`).join('');}
-  if(done.length){html+=`<div class="section-head" style="margin-top:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg> Concluídas (${done.length})</div>`;html+=done.map(t=>`<div class="task-row done"><input type="checkbox" class="task-cb" checked onchange="toggleTask('${t.id}')"><div class="task-body"><div class="task-text">${t.texto}</div></div><button class="task-del" onclick="deleteTask('${t.id}')">×</button></div>`).join('');}
+  if(pending.length){html+=`<div class="section-head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> Pendentes (${pending.length})</div>`;html+=pending.map(t=>`<div class="task-row"><input type="checkbox" class="task-cb" ${t.done?'checked':''} onchange="toggleTask('${t.id}')"><div class="task-body"><div class="task-text">${esc(t.texto)}</div><div class="task-meta">${t.materiaId?`<span class="badge badge-neutral">${getMateriaName(t.materiaId)}</span>`:''}<span class="badge ${pc[t.prio]||'badge-neutral'}">${t.prio}</span>${t.dataVenc?`<span style="font-size:11px;color:var(--t2)">📅 ${fmtISOFull(t.dataVenc)}${t.hora?' '+t.hora:''}</span>`:''}<span class="task-gcal-icon ${t.gcalId?'synced':''}">${t.gcalId?'📅 Agendado':''}</span></div></div><button class="task-del" onclick="deleteTask('${t.id}')">×</button></div>`).join('');}
+  if(done.length){html+=`<div class="section-head" style="margin-top:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg> Concluídas (${done.length})</div>`;html+=done.map(t=>`<div class="task-row done"><input type="checkbox" class="task-cb" checked onchange="toggleTask('${t.id}')"><div class="task-body"><div class="task-text">${esc(t.texto)}</div></div><button class="task-del" onclick="deleteTask('${t.id}')">×</button></div>`).join('');}
   cont.innerHTML=html;
 }
 
@@ -1391,7 +1555,7 @@ function getMateriaName(id){const m=S.materias.find(m=>m.id===id);return m?`${m.
 //  MATERIAS
 // ════════════════════════════════════════════════════
 function addMateria(){
-  const nome=document.getElementById('m-nome').value.trim();
+  const nome=document.getElementById('m-nome').value.trim().substring(0,100);
   if(!nome){toast('Digite o nome da matéria.');return;}
   if(S.materias.find(m=>m.nome===nome)){toast('Matéria já existe.');return;}
   const id=Date.now().toString();
@@ -1415,7 +1579,7 @@ function renderMaterias(){
     const cor=CORES[idx%CORES.length];const med=matMedia(m);
     const mc=med===null?'var(--t2)':med>=7?'var(--green)':med>=5?'var(--amber)':'var(--red)';
     return`<div class="subject-card" style="--sc:${cor}"><div class="subject-card::before"></div><style>.subject-card:nth-child(${idx+1})::before{background:${cor}!important}</style>
-      <div class="subject-name"><span style="font-size:20px">${m.emoji||'📖'}</span>${m.nome}<button class="subject-del" onclick="deleteMateria('${m.id}')">remover</button></div>
+      <div class="subject-name"><span style="font-size:20px">${esc(m.emoji||'📖')}</span>${esc(m.nome)}<button class="subject-del" onclick="deleteMateria('${m.id}')">remover</button></div>
       <div class="grades-grid">${['n1','n2','n3','n4'].map((n,j)=>`<div class="grade-cell"><div class="grade-label">Nota ${j+1}</div><input class="grade-inp" type="number" min="0" max="10" step="0.1" value="${m[n]}" placeholder="—" oninput="updateNota('${m.id}','${n}',this.value)"></div>`).join('')}</div>
       <div class="subject-footer"><span style="font-size:13px;color:var(--t2)">Média atual</span><div style="display:flex;align-items:baseline;gap:6px"><span class="media-display" id="med-${m.id}" style="color:${mc}">${med!==null?med.toFixed(1):'—'}</span><span style="font-size:12px;color:var(--t3)">/10</span></div></div>
     </div>`;}).join('');
@@ -1447,7 +1611,7 @@ function toggleTimer(){
 function resetTimer(){clearInterval(timerInterval);timerRunning=false;document.getElementById('btn-timer').innerHTML='▶ Iniciar';document.getElementById('timer-label').textContent='Pronto';timerSecs=timerTotal=S.pomoCfg[timerMode]*60;updateTimerUI();}
 function applyCfg(){S.pomoCfg={foco:parseInt(document.getElementById('cfg-foco').value)||25,curto:parseInt(document.getElementById('cfg-curto').value)||5,longo:parseInt(document.getElementById('cfg-longo').value)||15,sessoes:parseInt(document.getElementById('cfg-sessoes').value)||4};save();resetTimer();}
 function renderTimerDots(){const today=getTodayISO(),p=S.pomo||{date:'',count:0},cnt=p.date===today?p.count:0;document.getElementById('timer-sessions-count').textContent=cnt;let d='';for(let i=0;i<S.pomoCfg.sessoes;i++)d+=`<div class="sdot ${i<(cnt%S.pomoCfg.sessoes||(cnt>0&&cnt%S.pomoCfg.sessoes===0?S.pomoCfg.sessoes:0))?'on':''}"></div>`;document.getElementById('sdots').innerHTML=d;}
-function renderTimerHistory(){const today=getTodayISO(),p=S.pomo||{date:'',count:0,history:[]},hist=p.date===today?p.history:[];const el=document.getElementById('timer-history');if(!hist.length){el.innerHTML='<div style="font-size:13px;color:var(--t3);padding:12px 0">Nenhuma sessão hoje</div>';return;}el.innerHTML='<table class="tbl">'+hist.slice().reverse().map(h=>`<tr><td>${h.time}</td><td>${h.mat}</td><td><span class="badge badge-amber">${h.dur}min</span></td></tr>`).join('')+'</table>';}
+function renderTimerHistory(){const today=getTodayISO(),p=S.pomo||{date:'',count:0,history:[]},hist=p.date===today?p.history:[];const el=document.getElementById('timer-history');if(!hist.length){el.innerHTML='<div style="font-size:13px;color:var(--t3);padding:12px 0">Nenhuma sessão hoje</div>';return;}el.innerHTML='<table class="tbl">'+hist.slice().reverse().map(h=>`<tr><td>${esc(h.time)}</td><td>${esc(h.mat)}</td><td><span class="badge badge-amber">${h.dur}min</span></td></tr>`).join('')+'</table>';}
 function renderTimer(){document.getElementById('cfg-foco').value=S.pomoCfg.foco;document.getElementById('cfg-curto').value=S.pomoCfg.curto;document.getElementById('cfg-longo').value=S.pomoCfg.longo;document.getElementById('cfg-sessoes').value=S.pomoCfg.sessoes;populateMateriaSelects();renderTimerDots();renderTimerHistory();updateTimerUI();}
 
 // ════════════════════════════════════════════════════
@@ -1456,7 +1620,7 @@ function renderTimer(){document.getElementById('cfg-foco').value=S.pomoCfg.foco;
 function addGoal(){const n=document.getElementById('g-nome').value.trim();if(!n){toast('Digite o nome da meta.');return;}S.goals.push({id:Date.now().toString(),nome:n,icone:document.getElementById('g-icone').value.trim()||'🎯',atual:parseFloat(document.getElementById('g-atual').value)||0,total:parseFloat(document.getElementById('g-total').value)||10,unidade:document.getElementById('g-unidade').value.trim()||'itens',prazo:document.getElementById('g-prazo').value});['g-nome','g-icone','g-unidade','g-prazo'].forEach(id=>document.getElementById(id).value='');save();renderGoals();toast('Meta adicionada! 🎯');}
 function updateGoal(id,val){const g=S.goals.find(g=>g.id===id);if(g){g.atual=Math.min(parseFloat(val)||0,g.total);save();renderGoals();}}
 function deleteGoal(id){S.goals=S.goals.filter(g=>g.id!==id);save();renderGoals();}
-function renderGoals(){const list=document.getElementById('goals-list');if(!S.goals.length){list.innerHTML='<div class="card" style="text-align:center;padding:32px;color:var(--t3)">Nenhuma meta cadastrada ainda.</div>';return;}list.innerHTML=S.goals.map(g=>{const pct=Math.round(g.atual/g.total*100);const cor=pct>=100?'var(--green)':pct>=50?'var(--amber)':'var(--blue)';return`<div class="goal-item"><div class="goal-head"><div class="goal-icon" style="background:${pct>=100?'var(--green-dim)':pct>=50?'var(--amber-dim)':'var(--blue-dim)'}">${g.icone}</div><div class="goal-info"><div class="goal-name">${g.nome}</div><div class="goal-det">${g.atual} de ${g.total} ${g.unidade}${g.prazo?` · prazo: ${fmtISOFull(g.prazo)}`:''}</div><div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:${pct}%;background:${cor}"></div></div></div><div class="goal-right"><span class="goal-pct" style="color:${cor}">${pct}%</span><input type="number" class="goal-upd" min="0" max="${g.total}" step="0.5" value="${g.atual}" onchange="updateGoal('${g.id}',this.value)"><button class="btn-danger" onclick="deleteGoal('${g.id}')">remover</button></div></div></div>`;}).join('');}
+function renderGoals(){const list=document.getElementById('goals-list');if(!S.goals.length){list.innerHTML='<div class="card" style="text-align:center;padding:32px;color:var(--t3)">Nenhuma meta cadastrada ainda.</div>';return;}list.innerHTML=S.goals.map(g=>{const pct=Math.round(g.atual/g.total*100);const cor=pct>=100?'var(--green)':pct>=50?'var(--amber)':'var(--blue)';return`<div class="goal-item"><div class="goal-head"><div class="goal-icon" style="background:${pct>=100?'var(--green-dim)':pct>=50?'var(--amber-dim)':'var(--blue-dim)'}">${g.icone}</div><div class="goal-info"><div class="goal-name">${esc(g.nome)}</div><div class="goal-det">${esc(String(g.atual))} de ${esc(String(g.total))} ${esc(g.unidade)}${g.prazo?` · prazo: ${fmtISOFull(g.prazo)}`:''}</div><div class="prog" style="margin-top:8px"><div class="prog-fill" style="width:${pct}%;background:${cor}"></div></div></div><div class="goal-right"><span class="goal-pct" style="color:${cor}">${pct}%</span><input type="number" class="goal-upd" min="0" max="${g.total}" step="0.5" value="${g.atual}" onchange="updateGoal('${g.id}',this.value)"><button class="btn-danger" onclick="deleteGoal('${g.id}')">remover</button></div></div></div>`;}).join('');}
 
 // ════════════════════════════════════════════════════
 //  CALENDAR
@@ -1476,7 +1640,7 @@ function renderCal(){
     const iso=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday=new Date(calYear,calMonth,d).getTime()===hoje.getTime();
     const dayTasks=S.tasks.filter(t=>t.dataVenc===iso);
-    const evDots=dayTasks.map(t=>{const c=t.done?'var(--green)':t.prio==='urgente'?'var(--red)':t.prio==='importante'?'var(--amber)':'var(--blue)';return`<div class="cal-event-dot" style="background:${c}22;color:${c}">· ${t.texto}</div>`;}).join('');
+    const evDots=dayTasks.map(t=>{const c=t.done?'var(--green)':t.prio==='urgente'?'var(--red)':t.prio==='importante'?'var(--amber)':'var(--blue)';return`<div class="cal-event-dot" style="background:${c}22;color:${c}">· ${esc(t.texto)}</div>`;}).join('');
     html+=`<div class="cal-cell${isToday?' today':''}${dayTasks.length?' has-items':''}" onclick="calSelectDay('${iso}')"><div class="cal-day-num">${d}</div><div class="cal-events">${evDots}</div></div>`;
   }
   const rem=(firstDay+dim)%7===0?0:7-(firstDay+dim)%7;
@@ -1490,7 +1654,7 @@ function calSelectDay(iso){
   const dt=S.tasks.filter(t=>t.dataVenc===iso);
   const pc={urgente:'badge-red',importante:'badge-amber',normal:'badge-neutral'};
   let html='';
-  if(dt.length){html=dt.map(t=>`<div class="task-row ${t.done?'done':''}"><input type="checkbox" class="task-cb" ${t.done?'checked':''} onchange="toggleTask('${t.id}');renderCal();calSelectDay('${iso}')"><div class="task-body"><div class="task-text">${t.texto}</div><div class="task-meta"><span class="badge ${pc[t.prio]||'badge-neutral'}">${t.prio}</span>${t.hora?`<span style="font-size:12px;color:var(--t2)">🕐 ${t.hora}</span>`:''}</div></div></div>`).join('');}
+  if(dt.length){html=dt.map(t=>`<div class="task-row ${t.done?'done':''}"><input type="checkbox" class="task-cb" ${t.done?'checked':''} onchange="toggleTask('${t.id}');renderCal();calSelectDay('${iso}')"><div class="task-body"><div class="task-text">${esc(t.texto)}</div><div class="task-meta"><span class="badge ${pc[t.prio]||'badge-neutral'}">${t.prio}</span>${t.hora?`<span style="font-size:12px;color:var(--t2)">🕐 ${t.hora}</span>`:''}</div></div></div>`).join('');}
   else html='<div style="font-size:13px;color:var(--t3);padding:12px 0">Nenhuma tarefa para este dia.</div>';
   document.getElementById('cal-detail-body').innerHTML=html;
   document.getElementById('cal-detail').style.display='block';
@@ -1505,7 +1669,7 @@ let activeBlockEl=null;
 
 // ─── FOLDERS ────────────────────────────────────────
 function newFolder(){
-  const name=prompt('Nome da pasta (ex: Matemática, Biologia):');
+  const _raw=prompt('Nome da pasta (ex: Matemática, Biologia):');const name=_raw?_raw.trim().slice(0,80):'';
   if(!name||!name.trim())return;
   const folder={id:Date.now().toString(),name:name.trim(),emoji:'📁'};
   S.folders.push(folder);
@@ -1529,7 +1693,7 @@ function populateFolderSelects(){
   ['np-folder'].forEach(selId=>{
     const el=document.getElementById(selId);if(!el)return;
     const cur=el.value;
-    el.innerHTML='<option value="">Sem pasta</option>'+(S.folders||[]).map(f=>`<option value="${f.id}"${f.id===cur?' selected':''}>${f.emoji||'📁'} ${f.name}</option>`).join('');
+    el.innerHTML='<option value="">Sem pasta</option>'+(S.folders||[]).map(f=>`<option value="${f.id}"${f.id===cur?' selected':''}>${esc(f.emoji||'📁')} ${esc(f.name)}</option>`).join('');
   });
 }
 
@@ -1606,7 +1770,7 @@ function renderSidebarPages(){
       ondrop="onFolderDrop(event,'${f.id}')">
       <span class="folder-arrow">▶</span>
       <span class="folder-icon">${f.emoji||'📁'}</span>
-      <span class="folder-name">${f.name}</span>
+      <span class="folder-name">${esc(f.name)}</span>
       <span class="folder-count">${folderPages.length}</span>
       <button class="folder-del" onclick="event.stopPropagation();deleteFolder('${f.id}')">×</button>
     </div>
@@ -1739,6 +1903,8 @@ function changeCover(){const page=S.pages.find(p=>p.id===S.currentPageId);if(pag
 function renderBlocks(page){
   const cont=document.getElementById('blocks-container');
   if(!cont)return;
+  // Sanitize each block's HTML content before rendering
+  page.blocks.forEach(b=>{ if(b.content)b.content=sanitizeBlockHtml(b.content); });
   cont.innerHTML=page.blocks.map(b=>renderBlockHTML(b,page)).join('');
   cont.querySelectorAll('[contenteditable]').forEach(el=>attachBlockListeners(el,page));
   updateWordCount(page);
@@ -1982,9 +2148,32 @@ function fmtClearHighlight(){
   hideFormattingToolbar();
 }
 
+function fmtUndo(){ document.execCommand('undo',false,null); savePageDebounced(); }
+function fmtRedo(){ document.execCommand('redo',false,null); savePageDebounced(); }
+function fmtFont(font){ if(!font)return; document.execCommand('fontName',false,font); savePageDebounced(); }
+function fmtSize(size){ if(!size)return; document.execCommand('fontSize',false,size); savePageDebounced(); }
+function fmtErase(){
+  // Remove all inline formatting from selection (bold, italic, color, font, highlight spans)
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed)return;
+  document.execCommand('removeFormat',false,null);
+  // Also strip any remaining spans with style/class
+  const range=sel.getRangeAt(0);
+  const frag=range.cloneContents();
+  const tmp=document.createElement('div');
+  tmp.appendChild(frag);
+  tmp.querySelectorAll('span,b,i,u,s,strong,em').forEach(el=>{
+    el.replaceWith(document.createTextNode(el.textContent));
+  });
+  range.deleteContents();
+  range.insertNode(tmp.firstChild||document.createTextNode(''));
+  savePageDebounced();
+  hideFormattingToolbar();
+}
 function fmtLink(){
   const url=prompt('URL do link:','https://');
-  if(url)document.execCommand('createLink',false,url);
+  if(!url||!url.startsWith('http'))return;
+  document.execCommand('createLink',false,esc(url));
   savePageDebounced();
 }
 
@@ -2110,6 +2299,8 @@ function addOneDay(iso){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+
 // ════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='z'&&!e.shiftKey){fmtUndo();return;}
+  if((e.metaKey||e.ctrlKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){fmtRedo();return;}
   if((e.metaKey||e.ctrlKey)&&e.key==='b'){e.preventDefault();fmtExec('bold');return;}
   if((e.metaKey||e.ctrlKey)&&e.key==='i'){e.preventDefault();fmtExec('italic');return;}
   if((e.metaKey||e.ctrlKey)&&e.key==='u'){e.preventDefault();fmtExec('underline');return;}
@@ -2158,10 +2349,24 @@ function initCadernoState(){
   }
 }
 
+function toggleTheme(){
+  const isLight = document.body.classList.toggle('light-mode');
+  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+  try{ localStorage.setItem('sos_theme', isLight ? 'light' : 'dark'); }catch(e){}
+}
+function initTheme(){
+  const saved = localStorage.getItem('sos_theme');
+  if(saved === 'light'){
+    document.body.classList.add('light-mode');
+    const btn = document.getElementById('theme-toggle');
+    if(btn) btn.textContent = '☀️';
+  }
+}
 function _appReady(){
   // Reveal app UI
   document.body.classList.remove('app-loading');
   document.body.classList.add('app-ready');
+  initTheme();
   initCadernoState();
   checkStreak();
   renderStreak();
