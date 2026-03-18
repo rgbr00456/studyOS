@@ -408,20 +408,48 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 
 /* ── FORMATTING TOOLBAR ── */
 .fmt-toolbar{
-  position:fixed;background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-lg);
-  padding:5px 8px;display:flex;align-items:center;gap:2px;box-shadow:0 8px 24px rgba(0,0,0,0.5);
-  z-index:2000;opacity:0;pointer-events:none;transition:opacity 0.15s;white-space:nowrap;
+  position:fixed;
+  background:var(--s1);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:4px 6px;
+  display:flex;
+  align-items:center;
+  gap:1px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.6),0 2px 8px rgba(0,0,0,0.3);
+  z-index:2000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.12s,transform 0.12s;
+  transform:translateY(4px);
+  white-space:nowrap;
+  user-select:none;
 }
-.fmt-toolbar.visible{opacity:1;pointer-events:all}
+.fmt-toolbar.visible{opacity:1;pointer-events:all;transform:translateY(0)}
+/* Arrow below toolbar */
+.fmt-toolbar::after{
+  content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);
+  width:10px;height:10px;background:var(--s1);border-right:1px solid var(--border2);
+  border-bottom:1px solid var(--border2);clip-path:polygon(0 0,100% 100%,0 100%);
+  transform:translateX(-50%) rotate(45deg);
+}
 .fmt-btn{
-  width:28px;height:28px;border:none;background:none;border-radius:var(--r-sm);
-  color:var(--t2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
-  transition:all 0.1s;font-family:var(--font-sans);
+  width:30px;height:28px;border:none;background:none;border-radius:6px;
+  color:var(--t2);cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.1s,color 0.1s;
+  font-family:var(--font-sans);flex-shrink:0;
 }
 .fmt-btn:hover{background:var(--s3);color:var(--text)}
 .fmt-btn.active{background:var(--accent-dim);color:var(--accent)}
-.fmt-sep{width:1px;height:18px;background:var(--border2);margin:0 3px;flex-shrink:0}
-.fmt-highlight-btn{font-size:11px;font-weight:700;border-radius:4px;padding:0 5px;width:auto;height:24px}
+.fmt-sep{width:1px;height:16px;background:var(--border2);margin:0 2px;flex-shrink:0;align-self:center}
+/* Highlight swatches */
+.hl-swatch{
+  width:18px;height:18px;border-radius:4px;cursor:pointer;
+  border:1.5px solid transparent;transition:transform 0.1s,border-color 0.1s;
+  flex-shrink:0;
+}
+.hl-swatch:hover{transform:scale(1.2);border-color:rgba(255,255,255,0.3)}
 
 /* Highlight colors */
 .hl-yellow{background:#f5e642;color:#2a2600!important;border-radius:2px;padding:0 2px}
@@ -900,21 +928,48 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 </div>
 
 
-<!-- ── FORMATTING TOOLBAR ── -->
+<!-- ── FLOATING FORMATTING TOOLBAR ── -->
 <div class="fmt-toolbar" id="fmt-toolbar">
-  <button class="fmt-btn" id="fmt-bold" title="Negrito (Ctrl+B)" onclick="fmtExec('bold')"><b>B</b></button>
-  <button class="fmt-btn" id="fmt-italic" title="Itálico (Ctrl+I)" onclick="fmtExec('italic')"><i>I</i></button>
-  <button class="fmt-btn" id="fmt-underline" title="Sublinhado (Ctrl+U)" onclick="fmtExec('underline')"><u>U</u></button>
-  <button class="fmt-btn" id="fmt-strike" title="Tachado" onclick="fmtExec('strikeThrough')"><s>S</s></button>
+  <!-- Bold -->
+  <button class="fmt-btn" id="fmt-bold" title="Negrito (Ctrl+B)" onmousedown="event.preventDefault();fmtExec('bold')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h8a4 4 0 010 8H6V4zm0 8h9a4 4 0 010 8H6v-8z"/></svg>
+  </button>
+  <!-- Italic -->
+  <button class="fmt-btn" id="fmt-italic" title="Itálico (Ctrl+I)" onmousedown="event.preventDefault();fmtExec('italic')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+  </button>
+  <!-- Underline -->
+  <button class="fmt-btn" id="fmt-underline" title="Sublinhado (Ctrl+U)" onmousedown="event.preventDefault();fmtExec('underline')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 3v7a6 6 0 0012 0V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg>
+  </button>
+  <!-- Strikethrough -->
+  <button class="fmt-btn" id="fmt-strike" title="Tachado" onmousedown="event.preventDefault();fmtExec('strikeThrough')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17.3 12H20M4 12h8.7M9 5a4 4 0 015.3.4M9.7 18.5A4 4 0 0016 17"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+  </button>
+
   <div class="fmt-sep"></div>
-  <button class="fmt-highlight-btn fmt-btn" style="background:#f5e642;color:#2a2600" title="Marca-texto amarelo" onclick="fmtHighlight('yellow')">A</button>
-  <button class="fmt-highlight-btn fmt-btn" style="background:#52c48a;color:#0a2010" title="Marca-texto verde" onclick="fmtHighlight('green')">A</button>
-  <button class="fmt-highlight-btn fmt-btn" style="background:#6b9ae8;color:#050e28" title="Marca-texto azul" onclick="fmtHighlight('blue')">A</button>
-  <button class="fmt-highlight-btn fmt-btn" style="background:#e87a9a;color:#28000e" title="Marca-texto rosa" onclick="fmtHighlight('pink')">A</button>
-  <button class="fmt-highlight-btn fmt-btn" style="background:#e8a84b;color:#28160a" title="Marca-texto laranja" onclick="fmtHighlight('orange')">A</button>
-  <button class="fmt-btn" title="Remover formatação" onclick="fmtExec('removeFormat')" style="font-size:11px;width:auto;padding:0 6px">✕ fmt</button>
+
+  <!-- Highlight swatches -->
+  <div style="display:flex;align-items:center;gap:3px;padding:0 2px" title="Marca-texto">
+    <div class="hl-swatch" style="background:#f5e642" title="Amarelo"   onmousedown="event.preventDefault();fmtHighlight('yellow')"></div>
+    <div class="hl-swatch" style="background:#52c48a" title="Verde"     onmousedown="event.preventDefault();fmtHighlight('green')"></div>
+    <div class="hl-swatch" style="background:#6b9ae8" title="Azul"      onmousedown="event.preventDefault();fmtHighlight('blue')"></div>
+    <div class="hl-swatch" style="background:#e87a9a" title="Rosa"      onmousedown="event.preventDefault();fmtHighlight('pink')"></div>
+    <div class="hl-swatch" style="background:#e8a84b" title="Laranja"   onmousedown="event.preventDefault();fmtHighlight('orange')"></div>
+    <div class="hl-swatch" style="background:transparent;border:1.5px solid var(--border2)" title="Remover marca-texto" onmousedown="event.preventDefault();fmtClearHighlight()"></div>
+  </div>
+
   <div class="fmt-sep"></div>
-  <button class="fmt-btn" title="Link" onclick="fmtLink()" style="font-size:11px">🔗</button>
+
+  <!-- Clear all formatting -->
+  <button class="fmt-btn" title="Limpar formatação" onmousedown="event.preventDefault();fmtExec('removeFormat')" style="font-size:10px;width:26px;color:var(--t3)">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 15.88L4 20"/><path d="M20 4L8 16M4 20l4-4"/></svg>
+  </button>
+
+  <!-- Link -->
+  <button class="fmt-btn" title="Inserir link" onmousedown="event.preventDefault();fmtLink()" style="font-size:11px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+  </button>
 </div>
 
 <!-- ── NEW PAGE MODAL ── -->
@@ -1737,7 +1792,56 @@ function savePageDebounced(){
 }
 
 function handleBlockKeydown(e,el,page){
-  // Code blocks: Enter is literal newline — no interference
+  // ── TAB / SHIFT+TAB (Obsidian/Sublime style) ─────────────────
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const sel=window.getSelection();
+    if(!sel||!sel.rangeCount) return;
+
+    if(!e.shiftKey){
+      // Tab → insert 4 non-breaking spaces at caret
+      const range=sel.getRangeAt(0);
+      // If text is selected, replace it first
+      if(!sel.isCollapsed) range.deleteContents();
+      const spaces=document.createTextNode('\u00a0\u00a0\u00a0\u00a0');
+      range.insertNode(spaces);
+      range.setStartAfter(spaces);
+      range.setEndAfter(spaces);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else {
+      // Shift+Tab → remove up to 4 leading spaces from current line
+      const range=sel.getRangeAt(0);
+      const container=range.startContainer;
+      if(container.nodeType===3){
+        const text=container.textContent;
+        const offset=range.startOffset;
+        // Find start of current line in this text node
+        let lineStart=text.lastIndexOf('\n',offset-1)+1;
+        const linePrefix=text.substring(lineStart,offset);
+        // Count leading spaces/nbsp
+        let toRemove=0;
+        for(let i=0;i<linePrefix.length&&toRemove<4;i++){
+          if(linePrefix[i]===' '||linePrefix[i]==='\u00a0') toRemove++;
+          else break;
+        }
+        if(toRemove>0){
+          container.textContent=text.substring(0,lineStart)+text.substring(lineStart+toRemove);
+          const newOffset=Math.max(lineStart,offset-toRemove);
+          range.setStart(container,newOffset);
+          range.setEnd(container,newOffset);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      }
+    }
+
+    const b=page.blocks.find(b=>b.id===el.dataset.id);
+    if(b){b.content=el.innerHTML;savePageDebounced();}
+    return;
+  }
+
+  // Code blocks: Tab already handled above, rest is literal
   if(el.classList.contains('code')) return;
 
   // Escape slash menu
@@ -1749,7 +1853,7 @@ function handleBlockKeydown(e,el,page){
   }
 
   // Enter in todo/bullet/numbered on empty line → convert to paragraph
-  const blockType = el.closest('.block-wrap')?.dataset?.type || '';
+  const blockType=el.closest('.block-wrap')?.dataset?.type||'';
   if(e.key==='Enter'&&!e.shiftKey&&el.innerText.trim()===''&&
      ['todo','bullet','numbered'].includes(blockType)){
     e.preventDefault();
@@ -1757,9 +1861,7 @@ function handleBlockKeydown(e,el,page){
     if(b){b.type='paragraph';b.content='';savePage();renderBlocks(page);}
     return;
   }
-
-  // All other Enter: let browser handle naturally (inserts <br> or <div>)
-  // This gives the fluid writing feel — no block switch
+  // All other Enter: browser handles naturally
 }
 
 function addBlock(page,type,afterId=null){
@@ -1786,24 +1888,43 @@ function insertBlock(type){if(!slashAnchorEl)return;hideSlashMenu();const page=S
 function showFormattingToolbar(){
   const sel=window.getSelection();
   if(!sel||sel.isCollapsed||!sel.toString().trim()){hideFormattingToolbar();return;}
-  // Only show inside page editor blocks
   const range=sel.getRangeAt(0);
   const container=range.commonAncestorContainer;
   const block=container.nodeType===3?container.parentElement:container;
   if(!block.closest('#blocks-container')){hideFormattingToolbar();return;}
-  const rect=range.getBoundingClientRect();
+
   const toolbar=document.getElementById('fmt-toolbar');
-  let left=rect.left+rect.width/2-toolbar.offsetWidth/2;
-  let top=rect.top-48+window.scrollY;
-  if(left<8)left=8;
-  if(left+toolbar.offsetWidth>window.innerWidth-8)left=window.innerWidth-toolbar.offsetWidth-8;
+  // Make visible but transparent first to measure width
+  toolbar.style.visibility='hidden';
+  toolbar.classList.add('visible');
+  const tbW=toolbar.offsetWidth;
+  const tbH=toolbar.offsetHeight;
+  toolbar.style.visibility='';
+
+  const rect=range.getBoundingClientRect();
+  // Position: centered above selection, 8px gap
+  let left=rect.left+rect.width/2-tbW/2;
+  let top=rect.top-tbH-10;    // 10px above selection
+
+  // If above viewport, flip below
+  if(top<8){
+    top=rect.bottom+10;
+    // Remove arrow when flipped (pointing up)
+  }
+
+  // Clamp horizontal
+  left=Math.max(8,Math.min(left,window.innerWidth-tbW-8));
+
   toolbar.style.left=left+'px';
   toolbar.style.top=top+'px';
-  toolbar.classList.add('visible');
-  // Update active state
-  document.getElementById('fmt-bold').classList.toggle('active',document.queryCommandState('bold'));
-  document.getElementById('fmt-italic').classList.toggle('active',document.queryCommandState('italic'));
-  document.getElementById('fmt-underline').classList.toggle('active',document.queryCommandState('underline'));
+
+  // Update active states
+  try{
+    document.getElementById('fmt-bold').classList.toggle('active',document.queryCommandState('bold'));
+    document.getElementById('fmt-italic').classList.toggle('active',document.queryCommandState('italic'));
+    document.getElementById('fmt-underline').classList.toggle('active',document.queryCommandState('underline'));
+    document.getElementById('fmt-strike').classList.toggle('active',document.queryCommandState('strikeThrough'));
+  }catch(e){}
 }
 
 function hideFormattingToolbar(){
@@ -1832,6 +1953,30 @@ function fmtHighlight(color){
   catch(e){
     // Selection crosses elements — use execCommand instead
     document.execCommand('hiliteColor',false,colors[color]);
+  }
+  savePageDebounced();
+  hideFormattingToolbar();
+}
+
+function fmtClearHighlight(){
+  // Remove highlight spans from selection
+  const sel=window.getSelection();
+  if(!sel||sel.isCollapsed)return;
+  const range=sel.getRangeAt(0);
+  const frag=range.cloneContents();
+  const spans=frag.querySelectorAll('span[class^="hl-"],span[style*="background"]');
+  if(spans.length>0){
+    // Replace spans with their text content
+    const div=document.createElement('div');
+    div.appendChild(frag);
+    div.querySelectorAll('span[class^="hl-"],span[style*="background"]').forEach(s=>{
+      const txt=document.createTextNode(s.textContent);
+      s.replaceWith(txt);
+    });
+    range.deleteContents();
+    range.insertNode(div.firstChild||document.createTextNode(''));
+  } else {
+    document.execCommand('removeFormat',false,null);
   }
   savePageDebounced();
   hideFormattingToolbar();
@@ -1965,9 +2110,9 @@ function addOneDay(iso){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+
 // ════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();return;}
-  if((e.metaKey||e.ctrlKey)&&e.key==='b'&&activeBlockEl){e.preventDefault();fmtExec('bold');return;}
-  if((e.metaKey||e.ctrlKey)&&e.key==='i'&&activeBlockEl){e.preventDefault();fmtExec('italic');return;}
-  if((e.metaKey||e.ctrlKey)&&e.key==='u'&&activeBlockEl){e.preventDefault();fmtExec('underline');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='b'){e.preventDefault();fmtExec('bold');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='i'){e.preventDefault();fmtExec('italic');return;}
+  if((e.metaKey||e.ctrlKey)&&e.key==='u'){e.preventDefault();fmtExec('underline');return;}
   if(e.key==='Escape'){
     hideSlashMenu();hideFormattingToolbar();
     document.getElementById('search-overlay').classList.remove('open');
