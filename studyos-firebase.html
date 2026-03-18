@@ -2,18 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<!-- Security: restrict resource origins -->
-<meta http-equiv="Content-Security-Policy" content="
-  default-src 'self' https://*.googleapis.com https://*.gstatic.com https://*.firebaseapp.com https://*.firebaseio.com https://cdnjs.cloudflare.com https://accounts.google.com https://www.googleapis.com;
-  script-src 'self' 'unsafe-inline' https://*.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com https://accounts.google.com https://www.gstatic.com;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  font-src https://fonts.gstatic.com;
-  img-src 'self' data: https://*.googleusercontent.com https://*.google.com blob:;
-  connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebaseio.com;
-  frame-src 'none';
-  object-src 'none';
-  base-uri 'self';
-">
+<!-- Security headers (effective when served via HTTP, not meta CSP which breaks CDN scripts) -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -568,6 +557,36 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 .caderno-header{display:flex;align-items:center;justify-content:space-between;padding:0 8px 4px;flex-shrink:0}
 .caderno-toggle{background:none;border:none;color:var(--t3);cursor:pointer;font-size:11px;padding:2px 5px;border-radius:4px;transition:all 0.12s;font-family:var(--font-sans)}
 .caderno-toggle:hover{background:var(--s3);color:var(--text)}
+
+/* ── CUSTOM DIALOG ── */
+#app-dialog-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+  z-index:9000;display:none;align-items:center;justify-content:center;padding:20px;
+}
+#app-dialog-overlay.open{display:flex;animation:dlgIn 0.15s ease}
+@keyframes dlgIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
+#app-dialog-box{
+  background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-xl);
+  padding:24px;width:100%;max-width:380px;box-shadow:var(--shadow);
+}
+.dlg-icon{font-size:28px;margin-bottom:10px;display:block}
+.dlg-title{font-family:var(--font-serif);font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px}
+.dlg-msg{font-size:13.5px;color:var(--t2);line-height:1.6;margin-bottom:18px}
+.dlg-input{
+  width:100%;background:var(--s3);border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  color:var(--text);font-family:var(--font-sans);font-size:15px;padding:11px 13px;
+  outline:none;margin-bottom:16px;transition:border-color 0.15s;
+}
+.dlg-input:focus{border-color:var(--accent)}
+.dlg-input::placeholder{color:var(--t3)}
+.dlg-input-label{font-size:12px;color:var(--t2);margin-bottom:5px;display:block;font-weight:500}
+.dlg-btns{display:flex;gap:8px}
+.dlg-btns .btn{flex:1;justify-content:center}
+.dlg-btns .btn-ghost{flex:1;justify-content:center}
+.dlg-btn-danger{background:var(--red-dim);color:var(--red);border:1px solid rgba(217,107,107,0.25);
+  border-radius:var(--r-sm);font-family:var(--font-sans);font-size:13.5px;font-weight:600;
+  padding:9px 16px;cursor:pointer;flex:1;transition:all 0.15s}
+.dlg-btn-danger:hover{background:rgba(217,107,107,0.25)}
 </style>
 </head>
 <body class="app-loading">
@@ -966,6 +985,20 @@ body.app-ready .main{opacity:1;pointer-events:all;transition:opacity 0.35s 0.1s}
 </div>
 
 
+
+<!-- ── CUSTOM DIALOG MODAL ── -->
+<div id="app-dialog-overlay">
+  <div id="app-dialog-box">
+    <span class="dlg-icon" id="dlg-icon"></span>
+    <div class="dlg-title" id="dlg-title"></div>
+    <div class="dlg-msg"   id="dlg-msg"></div>
+    <label class="dlg-input-label" id="dlg-input-label" style="display:none"></label>
+    <input class="dlg-input" id="dlg-input" style="display:none"
+      onkeydown="if(event.key==='Enter')_dlgConfirm();if(event.key==='Escape')_dlgCancel()">
+    <div class="dlg-btns" id="dlg-btns"></div>
+  </div>
+</div>
+
 <!-- ── FLOATING FORMATTING TOOLBAR ── -->
 <div class="fmt-toolbar" id="fmt-toolbar">
 
@@ -1104,6 +1137,143 @@ window.switchForm = function(mode){
   const err = document.getElementById('login-error');
   if(err) err.style.display = 'none';
 };
+// ════════════════════════════════════════════════════
+//  CUSTOM DIALOG ENGINE
+// ════════════════════════════════════════════════════
+let _dlgResolve = null;
+
+function _dlgOpen({icon='', title='', msg='', inputLabel='', inputPlaceholder='', inputValue='', buttons=[], type='alert'}){
+  return new Promise(resolve => {
+    _dlgResolve = resolve;
+    document.getElementById('dlg-icon').textContent  = icon;
+    document.getElementById('dlg-title').textContent = title;
+    document.getElementById('dlg-msg').textContent   = msg;
+
+    const inp = document.getElementById('dlg-input');
+    const lbl = document.getElementById('dlg-input-label');
+    if(type === 'prompt'){
+      lbl.textContent = inputLabel;
+      lbl.style.display = inputLabel ? 'block' : 'none';
+      inp.placeholder  = inputPlaceholder || '';
+      inp.value        = inputValue || '';
+      inp.style.display = 'block';
+      setTimeout(()=>{ inp.focus(); inp.select(); }, 80);
+    } else {
+      lbl.style.display = 'none';
+      inp.style.display = 'none';
+      inp.value = '';
+    }
+
+    const btnsEl = document.getElementById('dlg-btns');
+    btnsEl.innerHTML = '';
+    buttons.forEach(btn => {
+      const el = document.createElement('button');
+      el.textContent = btn.label;
+      el.className   = btn.className || (btn.primary ? 'btn' : 'btn-ghost');
+      if(btn.danger) el.className = 'dlg-btn-danger';
+      el.style.flex  = '1';
+      el.onmousedown = (e) => e.preventDefault();
+      el.onclick = () => {
+        _dlgClose();
+        resolve(btn.value);
+      };
+      btnsEl.appendChild(el);
+    });
+
+    document.getElementById('app-dialog-overlay').classList.add('open');
+  });
+}
+
+function _dlgClose(){
+  document.getElementById('app-dialog-overlay').classList.remove('open');
+  _dlgResolve = null;
+}
+
+function _dlgConfirm(){
+  const inp = document.getElementById('dlg-input');
+  if(inp.style.display !== 'none'){
+    _dlgClose();
+    if(_dlgResolve) _dlgResolve(inp.value);
+  }
+}
+
+function _dlgCancel(){
+  _dlgClose();
+  if(_dlgResolve) _dlgResolve(null);
+}
+
+// Close on overlay click
+document.addEventListener('click', e => {
+  if(e.target.id === 'app-dialog-overlay') _dlgCancel();
+});
+
+// ── Convenience wrappers ──────────────────────────────
+function dlgAlert(msg, {icon='ℹ️', title='Aviso'}={}){
+  return _dlgOpen({icon, title, msg, type:'alert', buttons:[
+    {label:'OK', primary:true, value:true, className:'btn'}
+  ]});
+}
+
+function dlgConfirm(msg, {icon='⚠️', title='Confirmar', confirmLabel='Confirmar', dangerConfirm=false}={}){
+  return _dlgOpen({icon, title, msg, type:'confirm', buttons:[
+    {label:'Cancelar', value:false, className:'btn-ghost'},
+    {label:confirmLabel, value:true, danger:dangerConfirm, className: dangerConfirm ? 'dlg-btn-danger' : 'btn'}
+  ]});
+}
+
+function dlgPrompt(msg, {icon='✏️', title='', inputLabel='', placeholder='', defaultValue=''}={}){
+  return _dlgOpen({icon, title: title||msg, msg: title?msg:'', inputLabel, inputPlaceholder:placeholder,
+    inputValue:defaultValue, type:'prompt', buttons:[
+    {label:'Cancelar', value:null, className:'btn-ghost'},
+    {label:'Confirmar', primary:true, value:'__input__', className:'btn'}
+  ]});
+  // Note: __input__ value means "use input field value" — handled in _dlgOpen button click below
+}
+
+// Override dlgPrompt to return input value properly
+async function dlgPrompt(msg, {icon='✏️', title='', inputLabel='', placeholder='', defaultValue=''}={}){
+  return new Promise(resolve => {
+    _dlgResolve = resolve;
+    document.getElementById('dlg-icon').textContent  = icon;
+    document.getElementById('dlg-title').textContent = title || msg;
+    document.getElementById('dlg-msg').textContent   = title ? msg : '';
+
+    const inp = document.getElementById('dlg-input');
+    const lbl = document.getElementById('dlg-input-label');
+    lbl.textContent = inputLabel;
+    lbl.style.display = inputLabel ? 'block' : 'none';
+    inp.placeholder  = placeholder || '';
+    inp.value        = defaultValue || '';
+    inp.style.display = 'block';
+    setTimeout(()=>{ inp.focus(); inp.select(); }, 80);
+
+    const btnsEl = document.getElementById('dlg-btns');
+    btnsEl.innerHTML = '';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancelar';
+    cancelBtn.className = 'btn-ghost';
+    cancelBtn.style.flex = '1';
+    cancelBtn.onmousedown = e => e.preventDefault();
+    cancelBtn.onclick = () => { _dlgClose(); resolve(null); };
+
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'Confirmar';
+    okBtn.className = 'btn';
+    okBtn.style.flex = '1';
+    okBtn.onmousedown = e => e.preventDefault();
+    okBtn.onclick = () => {
+      const val = document.getElementById('dlg-input').value.trim();
+      _dlgClose();
+      resolve(val || null);
+    };
+
+    btnsEl.appendChild(cancelBtn);
+    btnsEl.appendChild(okBtn);
+    document.getElementById('app-dialog-overlay').classList.add('open');
+  });
+}
+
 // ════════════════════════════════════════════════════
 //  SECURITY UTILITIES
 // ════════════════════════════════════════════════════
@@ -1331,7 +1501,7 @@ if (!_isConfigured) {
   };
 
   window.doLogout = function() {
-    if (confirm('Sair da conta?')) { if(_unsubscribe)_unsubscribe(); _auth.signOut(); }
+    dlgConfirm('Tem certeza que deseja sair da conta?',{icon:'👋',title:'Sair',confirmLabel:'Sair',dangerConfirm:false}).then(ok=>{if(ok){if(_unsubscribe)_unsubscribe();_auth.signOut();}});
   };
 
   // switchForm already defined globally above — Firebase version overrides with error clear
@@ -1367,7 +1537,7 @@ if (!_isConfigured) {
 
 // Global redirect fallback — works even when popups are blocked
 window.doGoogleRedirect = function(){
-  if(!_auth){ alert('Firebase não inicializado. Verifique as credenciais no início do arquivo.'); return; }
+  if(!_auth){ dlgAlert('Firebase não inicializado. Verifique as credenciais no início do arquivo.',{icon:'🔧',title:'Configuração necessária'}); return; }
   _auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 
@@ -1563,7 +1733,7 @@ function addMateria(){
   document.getElementById('m-nome').value='';document.getElementById('m-emoji').value='';
   save();renderMaterias();populateMateriaSelects();toast('Matéria adicionada! 📚');
 }
-function deleteMateria(id){if(!confirm('Remover esta matéria?'))return;S.materias=S.materias.filter(m=>m.id!==id);save();renderMaterias();populateMateriaSelects();}
+function deleteMateria(id){dlgConfirm('Esta ação é irreversível. As notas serão perdidas.',{icon:'📖',title:'Remover matéria?',confirmLabel:'Remover',dangerConfirm:true}).then(ok=>{if(!ok)return;S.materias=S.materias.filter(m=>m.id!==id);save();renderMaterias();populateMateriaSelects();});}
 function updateNota(id,campo,val){const m=S.materias.find(m=>m.id===id);if(m){m[campo]=val;save();const med=matMedia(m);const el=document.getElementById('med-'+id);if(el){el.textContent=med!==null?med.toFixed(1):'—';el.style.color=med===null?'var(--t2)':med>=7?'var(--green)':med>=5?'var(--amber)':'var(--red)';}}}
 function saveHoras(){S.horas=DIAS.map((_,i)=>parseFloat(document.getElementById('hora-'+i).value)||0);save();toast('Horas salvas! ✓');renderDashboard();}
 
@@ -1669,19 +1839,23 @@ let activeBlockEl=null;
 
 // ─── FOLDERS ────────────────────────────────────────
 function newFolder(){
-  const _raw=prompt('Nome da pasta (ex: Matemática, Biologia):');const name=_raw?_raw.trim().slice(0,80):'';
-  if(!name||!name.trim())return;
+  dlgPrompt('Como chamar esta pasta?',{icon:'📁',title:'Nova pasta',inputLabel:'Nome da pasta',placeholder:'Ex: Matemática, Biologia...'}).then(name=>{
+    if(!name||!name.trim())return;
+    name=name.trim().substring(0,80);
   const folder={id:Date.now().toString(),name:name.trim(),emoji:'📁'};
   S.folders.push(folder);
   if(!S.openFolders)S.openFolders=[];
   S.openFolders.push(folder.id);
   save();renderSidebarPages();toast('Pasta criada!');
+  });
 }
 function deleteFolder(id){
-  if(!confirm('Remover pasta? As páginas dentro ficarão sem pasta.'))return;
+  dlgConfirm('As páginas dentro ficarão sem pasta.',{icon:'📁',title:'Remover pasta?',confirmLabel:'Remover',dangerConfirm:true}).then(ok=>{
+  if(!ok)return;
   S.folders=S.folders.filter(f=>f.id!==id);
   S.pages.forEach(p=>{if(p.folderId===id)p.folderId='';});
   save();renderSidebarPages();
+  });
 }
 function toggleFolder(id){
   if(!S.openFolders)S.openFolders=[];
@@ -1722,10 +1896,12 @@ function confirmNewPage(){
 
 function openPage(id){S.currentPageId=id;const page=S.pages.find(p=>p.id===id);if(!page)return;renderPageEditor(page);showView('page');renderSidebarPages();}
 function deletePage(id){
-  if(!confirm('Excluir esta página?'))return;
+  dlgConfirm('Esta página será excluída permanentemente.',{icon:'📄',title:'Excluir página?',confirmLabel:'Excluir',dangerConfirm:true}).then(ok=>{
+  if(!ok)return;
   S.pages=S.pages.filter(p=>p.id!==id);
   if(S.currentPageId===id)S.currentPageId=null;
   save();renderSidebarPages();showView('dashboard');
+  });
 }
 function savePage(){
   const page=S.pages.find(p=>p.id===S.currentPageId);if(!page)return;
@@ -2171,10 +2347,11 @@ function fmtErase(){
   hideFormattingToolbar();
 }
 function fmtLink(){
-  const url=prompt('URL do link:','https://');
-  if(!url||!url.startsWith('http'))return;
-  document.execCommand('createLink',false,esc(url));
-  savePageDebounced();
+  dlgPrompt('Insira o endereço do link:',{icon:'🔗',title:'Inserir link',inputLabel:'URL',placeholder:'https://...',defaultValue:'https://'}).then(url=>{
+    if(!url||!url.startsWith('http'))return;
+    document.execCommand('createLink',false,esc(url));
+    savePageDebounced();
+  });
 }
 
 // Hide toolbar when clicking outside
