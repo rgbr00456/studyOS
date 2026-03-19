@@ -1,16 +1,13 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { auth, isConfigured, gProvider } from './firebase.js'
-  import { onAuthStateChanged, signInWithPopup, signInWithEmailAndPassword,
-           createUserWithEmailAndPassword, signOut, updateProfile,
-           GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth'
+  import { onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth'
 
   import { currentUser, isLoggedIn, isGoogleUser, gcalToken, authStatus } from './stores/auth.js'
   import { state } from './stores/state.js'
-  import { activeView, syncStatus, showToast, cadernoOpen } from './stores/ui.js'
+  import { activeView, syncStatus, showToast } from './stores/ui.js'
   import { theme } from './stores/theme.js'
   import { subscribeDb, unsubscribeDb, saveDb, loadLocal, saveLocal } from './lib/db.js'
-  import { checkAuthRateLimit } from './lib/security.js'
 
   import SetupOverlay from './components/auth/SetupOverlay.svelte'
   import LoginScreen  from './components/auth/LoginScreen.svelte'

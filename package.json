@@ -2,14 +2,15 @@
   "name": "studyos",
   "version": "1.0.0",
   "private": true,
-  "description": "StudyOS — Workspace de estudos com Firebase e Svelte",
+  "description": "StudyOS \u2014 Workspace de estudos com Firebase e Svelte",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "firebase": "^10.12.2"
+    "firebase": "^10.12.2",
+    "chart.js": "^4.4.1"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.0",
