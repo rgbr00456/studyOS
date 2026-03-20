@@ -147,26 +147,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  :global {
-
-  .two-col { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
-  .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
-  .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-  .card-title { font-size:13px;font-weight:600;color:var(--text); }
-  .card-action { font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer; }
-  .mat-row { display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border); }
-  .mat-name { font-size:13px;color:var(--text);width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0; }
-  .mat-media { font-family:var(--font-serif);font-size:15px;font-weight:600;min-width:30px;text-align:right;flex-shrink:0; }
-  .row-item { display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border); }
-  .row-item:last-child { border-bottom:none; }
-  .row-item.clickable { cursor:pointer; }
-  .row-item.clickable:hover { background:var(--s2);margin:0 -8px;padding:7px 8px;border-radius:var(--r-sm); }
-  .row-text { flex:1;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
-  .row-date { font-size:11px;color:var(--t3); }
-  .empty { font-size:13px;color:var(--t3);padding:8px 0; }
-  @media(max-width:900px) { .two-col { grid-template-columns:1fr; } }
-
-  }
-</style>

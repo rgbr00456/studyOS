@@ -217,35 +217,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  :global {
-
-  .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
-  .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-  .card-title { font-size:13px;font-weight:600;color:var(--text); }
-  .two-col { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
-  .timer-hero { display:flex;flex-direction:column;align-items:center;padding:24px 0 16px; }
-  .mode-tabs { display:flex;gap:4px;background:var(--s2);border:1px solid var(--border);
-    border-radius:30px;padding:4px;margin-bottom:32px; }
-  .mtab { padding:7px 16px;border-radius:26px;border:none;background:none;color:var(--t2);
-    font-family:var(--font-sans);font-size:13px;cursor:pointer;transition:all 0.18s;white-space:nowrap; }
-  .mtab.active { background:var(--s1);color:var(--accent);box-shadow:var(--shadow-sm); }
-  .ring-wrap { position:relative;width:220px;height:220px;margin-bottom:16px; }
-  .ring-center { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center; }
-  .time-display { font-family:var(--font-serif);font-size:54px;font-weight:600;color:var(--text);letter-spacing:-0.04em;line-height:1; }
-  .time-label { font-size:12px;color:var(--t2);margin-top:4px; }
-  .controls { display:flex;gap:10px;margin-bottom:20px; }
-  .controls .btn { min-width:120px;justify-content:center; }
-  .sessions { display:flex;flex-direction:column;align-items:center;gap:8px; }
-  .dots { display:flex;gap:7px; }
-  .dot { width:10px;height:10px;border-radius:50%;background:var(--s4);transition:background 0.2s; }
-  .dot.active { background:var(--accent); }
-  .cfg-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
-  .tbl { width:100%;border-collapse:collapse; }
-  .tbl td { padding:8px;border-bottom:1px solid var(--border);font-size:13px; }
-  .tbl tr:last-child td { border-bottom:none; }
-  @media(max-width:900px) { .two-col { grid-template-columns:1fr; } }
-
-  }
-</style>

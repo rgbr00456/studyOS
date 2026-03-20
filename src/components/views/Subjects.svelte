@@ -116,38 +116,3 @@
     {/each}
   {/if}
 </div>
-
-<style>
-  :global {
-
-  .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
-  .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-  .card-title { font-size:13px;font-weight:600;color:var(--text); }
-  .horas-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:14px; }
-  .hora-col { text-align:center; }
-  .hora-dia { font-size:10px;color:var(--t3);font-weight:600;margin-bottom:5px;letter-spacing:0.04em; }
-  .hora-inp { width:100%;background:var(--s3);border:1px solid var(--border);border-radius:var(--r-sm);
-    color:var(--text);font-family:var(--font-serif);font-size:16px;font-weight:600;
-    padding:8px 4px;text-align:center;outline:none;-webkit-appearance:none; }
-  .hora-inp:focus { border-color:var(--accent); }
-  .subject-card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);
-    padding:20px;margin-bottom:12px;border-left:3px solid var(--cor); }
-  .subject-name { font-size:17px;font-weight:600;color:var(--text);margin-bottom:14px;
-    display:flex;align-items:center;gap:8px; }
-  .subject-del { margin-left:auto;background:none;border:none;color:var(--t3);cursor:pointer;
-    font-size:12px;padding:4px 8px;border-radius:var(--r-sm);transition:all 0.12s; }
-  .subject-del:hover { background:var(--red-dim);color:var(--red); }
-  .grades-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px; }
-  .grade-cell { background:var(--s3);border:1px solid var(--border);border-radius:var(--r-sm);
-    padding:10px;text-align:center; }
-  .grade-label { font-size:10px;color:var(--t3);margin-bottom:4px; }
-  .grade-inp { background:none;border:none;color:var(--text);font-family:var(--font-serif);
-    font-size:20px;font-weight:600;text-align:center;outline:none;width:100%;padding:0; }
-  .grade-inp::placeholder { color:var(--t4); }
-  .subject-footer { display:flex;justify-content:space-between;align-items:center;
-    padding-top:12px;border-top:1px solid var(--border); }
-  .media-val { font-family:var(--font-serif);font-size:24px;font-weight:600; }
-  @media(max-width:640px) { .horas-grid { grid-template-columns:repeat(4,1fr); } .grades-grid { grid-template-columns:1fr 1fr; } }
-
-  }
-</style>

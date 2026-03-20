@@ -107,27 +107,3 @@
     {/each}
   {/if}
 </div>
-
-<style>
-  :global {
-
-  .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
-  .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
-  .card-title { font-size:13px;font-weight:600;color:var(--text); }
-  .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px; }
-  .goal-item { background:var(--s2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:10px; }
-  .goal-head { display:flex;align-items:flex-start;gap:12px; }
-  .goal-icon { width:38px;height:38px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0; }
-  .goal-info { flex:1; }
-  .goal-name { font-size:15px;font-weight:500;color:var(--text);margin-bottom:2px; }
-  .goal-det { font-size:12px;color:var(--t2); }
-  .goal-right { display:flex;flex-direction:column;align-items:flex-end;gap:6px; }
-  .goal-pct { font-family:var(--font-serif);font-size:20px;font-weight:600; }
-  .goal-upd { width:64px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r-sm);
-    color:var(--text);font-family:var(--font-serif);font-size:14px;font-weight:600;
-    padding:6px;text-align:center;outline:none;-webkit-appearance:none; }
-  .goal-upd:focus { border-color:var(--accent); }
-  @media(max-width:640px) { .form-grid { grid-template-columns:1fr; } }
-
-  }
-</style>

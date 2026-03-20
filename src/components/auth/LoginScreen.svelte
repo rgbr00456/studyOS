@@ -113,28 +113,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  :global {
-
-  .screen { position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;align-items:center;justify-content:center; }
-  .box { background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-xl);padding:36px;width:100%;max-width:400px; }
-  .logo { font-family:var(--font-serif);font-size:26px;font-weight:600;color:var(--accent);text-align:center;font-style:italic;margin-bottom:4px; }
-  .tagline { font-size:13px;color:var(--t2);text-align:center;margin-bottom:28px; }
-  .error { background:var(--red-dim);border:1px solid rgba(217,107,107,0.2);border-radius:var(--r-sm);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px; }
-  .lbl { font-size:12px;color:var(--t2);margin-bottom:5px;display:block;font-weight:500; }
-  .inp { width:100%;background:var(--s3);border:1.5px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-family:var(--font-sans);font-size:14px;padding:10px 14px;outline:none;margin-bottom:12px;transition:border-color 0.15s; }
-  .inp:focus { border-color:var(--accent); }
-  .btn-login { width:100%;background:var(--accent);color:var(--bg);border:none;border-radius:var(--r-sm);font-family:var(--font-sans);font-size:14px;font-weight:700;padding:11px;cursor:pointer;transition:background 0.15s;margin-bottom:10px; }
-  .btn-login:hover { background:var(--accent2); }
-  .btn-login:disabled { opacity:0.6;cursor:not-allowed; }
-  .divider { display:flex;align-items:center;gap:10px;margin:12px 0; }
-  .divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--border); }
-  .divider span { font-size:12px;color:var(--t3); }
-  .btn-google { width:100%;background:var(--s2);color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);font-family:var(--font-sans);font-size:14px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;transition:all 0.15s; }
-  .btn-google:hover { background:var(--s3); }
-  .switch { text-align:center;font-size:13px;color:var(--t2); }
-  .switch button { background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font-sans);font-size:13px; }
-
-  }
-</style>

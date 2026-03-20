@@ -141,32 +141,3 @@
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
   </button>
 </div>
-
-<style>
-  :global {
-
-  .fmt-toolbar {
-    position:fixed;background:var(--s1);border:1px solid var(--border2);border-radius:10px;
-    padding:4px 6px;display:flex;align-items:center;gap:1px;
-    box-shadow:0 12px 32px rgba(0,0,0,0.6);z-index:2000;
-    opacity:0;pointer-events:none;transition:opacity 0.12s,transform 0.12s;
-    transform:translateY(4px);white-space:nowrap;user-select:none;
-  }
-  .fmt-toolbar.visible { opacity:1;pointer-events:all;transform:translateY(0); }
-  .sep { width:1px;height:16px;background:var(--border2);margin:0 2px;flex-shrink:0; }
-  .tb-btn { width:28px;height:28px;border:none;background:none;border-radius:6px;
-    color:var(--t2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
-    transition:all 0.1s; }
-  .tb-btn:hover { background:var(--s3);color:var(--text); }
-  .tb-btn.active { background:var(--accent-dim);color:var(--accent); }
-  .fmt-sel { font-size:11px;padding:2px 4px;background:var(--s2);border:1px solid var(--border2);
-    border-radius:5px;color:var(--text);cursor:pointer;outline:none;width:88px; }
-  .fmt-sel.sm { width:50px; }
-  .swatches { display:flex;align-items:center;gap:3px;padding:0 2px; }
-  .swatch { width:18px;height:18px;border-radius:4px;cursor:pointer;
-    border:1.5px solid transparent;transition:transform 0.1s; }
-  .swatch:hover { transform:scale(1.2); }
-  .swatch.clear { background:transparent;border-color:var(--border2); }
-
-  }
-</style>

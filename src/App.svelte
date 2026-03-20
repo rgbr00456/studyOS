@@ -109,18 +109,3 @@
 
 <Dialog />
 <Toast />
-
-<style>
-  .app-shell {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-    padding-top: var(--topbar);
-  }
-  .main-content {
-    margin-left: var(--sidebar);
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-</style>
