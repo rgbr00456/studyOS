@@ -24,8 +24,7 @@
   import PageEditor   from './components/editor/PageEditor.svelte'
 
   // ── Reactive bindings ───────────────────────────────────────────
-  $: bodyClass = $theme === 'light' ? 'light-mode' : ''
-  $: if (typeof document !== 'undefined') document.body.className = bodyClass
+  $: if (typeof document !== 'undefined') document.body.className = $theme === 'light' ? 'light-mode' : ''
 
   let uid = null
 
