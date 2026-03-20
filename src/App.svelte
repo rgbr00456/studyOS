@@ -24,7 +24,12 @@
   import PageEditor   from './components/editor/PageEditor.svelte'
 
   // ── Reactive bindings ───────────────────────────────────────────
-  $: if (typeof document !== 'undefined') document.body.className = $theme === 'light' ? 'light-mode' : ''
+  $: if (typeof document !== 'undefined') {
+    const classes = []
+    if ($theme === 'light') classes.push('light-mode')
+    if ($authStatus === 'authenticated') classes.push('app-ready')
+    document.body.className = classes.join(' ')
+  }
 
   let uid = null
 
@@ -91,7 +96,7 @@
 
 {#if $authStatus === 'authenticated'}
   <!-- Main app shell -->
-  <div class="app-shell" class:app-ready={$authStatus === 'authenticated'}>
+  <div class="app-shell">
     <Topbar />
     <Sidebar />
     <main class="main-content">
