@@ -149,6 +149,8 @@
 </div>
 
 <style>
+  :global {
+
   .two-col { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
   .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
   .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
@@ -165,4 +167,6 @@
   .row-date { font-size:11px;color:var(--t3); }
   .empty { font-size:13px;color:var(--t3);padding:8px 0; }
   @media(max-width:900px) { .two-col { grid-template-columns:1fr; } }
+
+  }
 </style>

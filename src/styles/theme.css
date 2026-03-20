@@ -1,18 +1,18 @@
-/* ─── Design Tokens ──────────────────────────────────────────────────────────── */
-:root {
-  /* Dark mode (default) */
-  --bg:#08080d; --s1:#0e0e15; --s2:#14141e; --s3:#1a1a26; --s4:#21212f; --s5:#28283a;
-  --accent:#c9a96e; --accent2:#e8c87a; --accent-dim:rgba(201,169,110,0.12);
-  --accent-glow:rgba(201,169,110,0.06);
-  --text:#ede8df; --t2:#8a857c; --t3:#4e4a46; --t4:#2e2c2a;
-  --border:rgba(255,255,255,0.055); --border2:rgba(255,255,255,0.09); --border3:rgba(255,255,255,0.14);
-  --green:#52c48a; --green-dim:rgba(82,196,138,0.12);
-  --blue:#6b9ae8;  --blue-dim:rgba(107,154,232,0.12);
-  --red:#d96b6b;   --red-dim:rgba(217,107,107,0.12);
-  --purple:#9b7ee8; --purple-dim:rgba(155,126,232,0.12);
-  --amber:#e8a84b; --amber-dim:rgba(232,168,75,0.12);
-  --r:10px; --r-sm:7px; --r-lg:14px; --r-xl:18px;
-  --sidebar:240px; --topbar:52px;
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#08080d;--s1:#0e0e15;--s2:#14141e;--s3:#1a1a26;--s4:#21212f;--s5:#28283a;
+  --accent:#c9a96e;--accent2:#e8c87a;--accent-dim:rgba(201,169,110,0.12);--accent-glow:rgba(201,169,110,0.06);
+  --text:#ede8df;--t2:#8a857c;--t3:#4e4a46;--t4:#2e2c2a;
+  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.09);--border3:rgba(255,255,255,0.14);
+  --green:#52c48a;--green-dim:rgba(82,196,138,0.12);
+  --blue:#6b9ae8;--blue-dim:rgba(107,154,232,0.12);
+  --red:#d96b6b;--red-dim:rgba(217,107,107,0.12);
+  --purple:#9b7ee8;--purple-dim:rgba(155,126,232,0.12);
+  --amber:#e8a84b;--amber-dim:rgba(232,168,75,0.12);
+  --r:10px;--r-sm:7px;--r-lg:14px;--r-xl:18px;
+  --sidebar:240px;--topbar:52px;
   --font-serif:'Playfair Display',Georgia,serif;
   --font-sans:'DM Sans',system-ui,sans-serif;
   --font-mono:'JetBrains Mono',monospace;
@@ -20,18 +20,18 @@
   --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
 }
 
-/* Light mode */
-body.light-mode {
-  --bg:#f5f4f0; --s1:#ffffff; --s2:#f0ede8; --s3:#e8e4de; --s4:#ddd9d2; --s5:#d4d0c8;
-  --accent:#8a6530; --accent2:#a07840; --accent-dim:rgba(138,101,48,0.12);
-  --accent-glow:rgba(138,101,48,0.06);
-  --text:#1a1814; --t2:#5a5650; --t3:#8a8680; --t4:#b0aca8;
-  --border:rgba(0,0,0,0.08); --border2:rgba(0,0,0,0.13); --border3:rgba(0,0,0,0.2);
-  --green:#1a7a4a; --green-dim:rgba(26,122,74,0.12);
-  --blue:#1a4e9e;  --blue-dim:rgba(26,78,158,0.12);
-  --red:#a02020;   --red-dim:rgba(160,32,32,0.12);
-  --purple:#5a2ea0; --purple-dim:rgba(90,46,160,0.12);
-  --amber:#7a4e10; --amber-dim:rgba(122,78,16,0.12);
-  --shadow:0 4px 24px rgba(0,0,0,0.12);
-  --shadow-sm:0 2px 8px rgba(0,0,0,0.08);
+/* ── LIGHT MODE ── */
+body.light-mode{
+  --bg:#f5f4f0;--s1:#ffffff;--s2:#f0ede8;--s3:#e8e4de;--s4:#ddd9d2;--s5:#d4d0c8;
+  --accent:#8a6530;--accent2:#a07840;--accent-dim:rgba(138,101,48,0.12);--accent-glow:rgba(138,101,48,0.06);
+  --text:#1a1814;--t2:#5a5650;--t3:#8a8680;--t4:#b0aca8;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);--border3:rgba(0,0,0,0.2);
+  --green:#1a7a4a;--green-dim:rgba(26,122,74,0.12);
+  --blue:#1a4e9e;--blue-dim:rgba(26,78,158,0.12);
+  --red:#a02020;--red-dim:rgba(160,32,32,0.12);
+  --purple:#5a2ea0;--purple-dim:rgba(90,46,160,0.12);
+  --amber:#7a4e10;--amber-dim:rgba(122,78,16,0.12);
+  --shadow:0 4px 24px rgba(0,0,0,0.12);--shadow-sm:0 2px 8px rgba(0,0,0,0.08);
 }
+body.light-mode .topbar{background:rgba(245,244,240,0.95)}
+body.light-mode .block.code-block{background:#e8e4de;color:#1a6a30}

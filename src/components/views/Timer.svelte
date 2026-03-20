@@ -219,6 +219,8 @@
 </div>
 
 <style>
+  :global {
+
   .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
   .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
   .card-title { font-size:13px;font-weight:600;color:var(--text); }
@@ -244,4 +246,6 @@
   .tbl td { padding:8px;border-bottom:1px solid var(--border);font-size:13px; }
   .tbl tr:last-child td { border-bottom:none; }
   @media(max-width:900px) { .two-col { grid-template-columns:1fr; } }
+
+  }
 </style>

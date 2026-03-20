@@ -156,6 +156,8 @@
 {/if}
 
 <style>
+  :global {
+
   .editor-topbar { display:flex;align-items:center;gap:8px;padding:10px 60px;
     border-bottom:1px solid var(--border);position:sticky;top:0;
     background:rgba(8,8,13,0.95);backdrop-filter:blur(8px);z-index:50; }
@@ -181,4 +183,6 @@
   .title-inp::placeholder { color:var(--t4); }
   .blocks { padding-top:4px; }
   @media(max-width:900px) { .editor-body { padding:12px 20px 60px; } .editor-topbar { padding:10px 20px; } }
+
+  }
 </style>

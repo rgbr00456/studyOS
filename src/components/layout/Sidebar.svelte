@@ -151,6 +151,8 @@
 </nav>
 
 <style>
+  :global {
+
   .sidebar { position:fixed;top:var(--topbar);left:0;bottom:0;width:var(--sidebar);
     background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow:hidden; }
   .section { padding:8px 8px 4px;flex-shrink:0; }
@@ -199,4 +201,6 @@
     cursor:pointer;color:var(--t3);font-size:13px;width:100%;border:none;background:none;
     font-family:var(--font-sans);transition:all 0.12s;margin-top:2px; }
   .new-page-btn:hover { background:var(--s3);color:var(--t2); }
+
+  }
 </style>

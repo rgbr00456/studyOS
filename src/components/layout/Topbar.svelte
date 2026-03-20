@@ -68,6 +68,8 @@
 </header>
 
 <style>
+  :global {
+
   .topbar {
     position: fixed; top: 0; left: 0; right: 0; height: var(--topbar);
     background: rgba(8,8,13,0.92); backdrop-filter: blur(12px);
@@ -106,4 +108,6 @@
     color:var(--accent);font-family:var(--font-serif);font-size:11px;font-weight:700;
     display:flex;align-items:center;justify-content:center; }
   .uname { font-size:12px;color:var(--t2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+
+  }
 </style>

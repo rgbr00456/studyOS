@@ -164,6 +164,8 @@
 </div>
 
 <style>
+  :global {
+
   .block-wrap { position:relative; margin:1px 0; }
   .block-wrap:hover .handle { opacity:1; }
   .handle { position:absolute;left:-28px;top:50%;transform:translateY(-50%);opacity:0;
@@ -195,4 +197,6 @@
     border-radius:var(--r);padding:12px 14px;display:flex;gap:10px;margin:4px 0; }
   .callout-icon { font-size:16px;flex-shrink:0;margin-top:2px; }
   .divider { border:none;border-top:1px solid var(--border);margin:12px 0; }
+
+  }
 </style>

@@ -115,6 +115,8 @@
 </div>
 
 <style>
+  :global {
+
   .screen { position:fixed;inset:0;background:var(--bg);z-index:998;display:flex;align-items:center;justify-content:center; }
   .box { background:var(--s1);border:1px solid var(--border2);border-radius:var(--r-xl);padding:36px;width:100%;max-width:400px; }
   .logo { font-family:var(--font-serif);font-size:26px;font-weight:600;color:var(--accent);text-align:center;font-style:italic;margin-bottom:4px; }
@@ -133,4 +135,6 @@
   .btn-google:hover { background:var(--s3); }
   .switch { text-align:center;font-size:13px;color:var(--t2); }
   .switch button { background:none;border:none;color:var(--accent);cursor:pointer;font-family:var(--font-sans);font-size:13px; }
+
+  }
 </style>

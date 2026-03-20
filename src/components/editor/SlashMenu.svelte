@@ -30,6 +30,8 @@
 </div>
 
 <style>
+  :global {
+
   .slash-menu { position:fixed;background:var(--s2);border:1px solid var(--border2);
     border-radius:var(--r-lg);padding:6px;min-width:220px;box-shadow:var(--shadow);z-index:1000; }
   .slash-item { display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;transition:background 0.1s; }
@@ -38,4 +40,6 @@
     display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
   .slash-name { font-size:13px;color:var(--text);font-weight:500; }
   .slash-desc { font-size:11px;color:var(--t3); }
+
+  }
 </style>

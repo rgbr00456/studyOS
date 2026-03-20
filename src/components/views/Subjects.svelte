@@ -118,6 +118,8 @@
 </div>
 
 <style>
+  :global {
+
   .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
   .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
   .card-title { font-size:13px;font-weight:600;color:var(--text); }
@@ -146,4 +148,6 @@
     padding-top:12px;border-top:1px solid var(--border); }
   .media-val { font-family:var(--font-serif);font-size:24px;font-weight:600; }
   @media(max-width:640px) { .horas-grid { grid-template-columns:repeat(4,1fr); } .grades-grid { grid-template-columns:1fr 1fr; } }
+
+  }
 </style>

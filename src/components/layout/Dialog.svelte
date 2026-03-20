@@ -54,6 +54,8 @@
 {/if}
 
 <style>
+  :global {
+
   .overlay { position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
     z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fi 0.15s; }
   @keyframes fi { from{opacity:0} to{opacity:1} }
@@ -70,4 +72,6 @@
   .dlg-input:focus { border-color:var(--accent); }
   .btns { display:flex;gap:8px;margin-top:4px; }
   .btns > :global(*) { flex:1; }
+
+  }
 </style>

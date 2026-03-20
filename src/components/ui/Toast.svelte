@@ -7,6 +7,8 @@
 {/if}
 
 <style>
+  :global {
+
   .toast {
     position: fixed; bottom: 24px; right: 24px;
     background: var(--s2); border: 1px solid var(--border2);
@@ -16,4 +18,6 @@
     animation: toastIn 0.22s ease;
   }
   @keyframes toastIn { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:translateY(0) } }
+
+  }
 </style>

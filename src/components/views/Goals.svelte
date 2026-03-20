@@ -109,6 +109,8 @@
 </div>
 
 <style>
+  :global {
+
   .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
   .card-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
   .card-title { font-size:13px;font-weight:600;color:var(--text); }
@@ -126,4 +128,6 @@
     padding:6px;text-align:center;outline:none;-webkit-appearance:none; }
   .goal-upd:focus { border-color:var(--accent); }
   @media(max-width:640px) { .form-grid { grid-template-columns:1fr; } }
+
+  }
 </style>

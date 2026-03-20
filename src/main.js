@@ -1,4 +1,3 @@
-// ─── App Entry Point ─────────────────────────────────────────────────────────
 import App from './App.svelte'
 import './styles/global.css'
 

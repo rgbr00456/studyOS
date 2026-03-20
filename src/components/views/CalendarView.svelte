@@ -142,6 +142,8 @@
 </div>
 
 <style>
+  :global {
+
   .view-content-wide { padding:0 24px 40px;max-width:1000px;margin:0 auto; }
   .card { background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px; }
   .cal-nav { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px; }
@@ -183,4 +185,6 @@
   .task-text { font-size:14px;color:var(--text);line-height:1.4; }
   .task-meta { display:flex;align-items:center;gap:6px;margin-top:4px; }
   .time-label { font-size:12px;color:var(--t2); }
+
+  }
 </style>

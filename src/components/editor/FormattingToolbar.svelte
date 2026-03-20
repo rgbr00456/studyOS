@@ -143,6 +143,8 @@
 </div>
 
 <style>
+  :global {
+
   .fmt-toolbar {
     position:fixed;background:var(--s1);border:1px solid var(--border2);border-radius:10px;
     padding:4px 6px;display:flex;align-items:center;gap:1px;
@@ -165,4 +167,6 @@
     border:1.5px solid transparent;transition:transform 0.1s; }
   .swatch:hover { transform:scale(1.2); }
   .swatch.clear { background:transparent;border-color:var(--border2); }
+
+  }
 </style>
