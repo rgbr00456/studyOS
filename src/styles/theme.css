@@ -1,6 +1,8 @@
-/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+/* ─── Design Tokens — extracted verbatim from studyos-firebase.html ─────────── */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap');
 
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#08080d;--s1:#0e0e15;--s2:#14141e;--s3:#1a1a26;--s4:#21212f;--s5:#28283a;
   --accent:#c9a96e;--accent2:#e8c87a;--accent-dim:rgba(201,169,110,0.12);--accent-glow:rgba(201,169,110,0.06);
@@ -19,7 +21,6 @@
   --shadow:0 4px 24px rgba(0,0,0,0.4);
   --shadow-sm:0 2px 8px rgba(0,0,0,0.3);
 }
-
 /* ── LIGHT MODE ── */
 body.light-mode{
   --bg:#f5f4f0;--s1:#ffffff;--s2:#f0ede8;--s3:#e8e4de;--s4:#ddd9d2;--s5:#d4d0c8;
@@ -31,7 +32,12 @@ body.light-mode{
   --red:#a02020;--red-dim:rgba(160,32,32,0.12);
   --purple:#5a2ea0;--purple-dim:rgba(90,46,160,0.12);
   --amber:#7a4e10;--amber-dim:rgba(122,78,16,0.12);
-  --shadow:0 4px 24px rgba(0,0,0,0.12);--shadow-sm:0 2px 8px rgba(0,0,0,0.08);
+  --shadow:0 4px 24px rgba(0,0,0,0.12);
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.08);
 }
 body.light-mode .topbar{background:rgba(245,244,240,0.95)}
-body.light-mode .block.code-block{background:#e8e4de;color:#1a6a30}
+body.light-mode .login-box,body.light-mode .modal{box-shadow:0 8px 32px rgba(0,0,0,0.15)}
+body.light-mode .block.code{background:#e8e4de;color:#1a6a30}
+body.light-mode .fmt-toolbar{background:#ffffff;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+body.light-mode .fmt-toolbar::after{background:#ffffff}
+html,body{height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);overflow:hidden;font-size:14px;line-height:1.6}
